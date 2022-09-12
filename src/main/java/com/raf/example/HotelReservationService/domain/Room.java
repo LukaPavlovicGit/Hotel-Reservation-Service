@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(indexes = {@Index(columnList = "name", unique = true)})
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
