@@ -34,7 +34,7 @@ public class HotelService {
             hotel.setNumberOfRooms(hotelDto.getNumberOfRooms());
             return hotelDto;
         }
-        
+
         throw new OperationNotAllowed("Manager with a ID: " + managerId + " is already a manager!");
     }
 

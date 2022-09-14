@@ -10,7 +10,6 @@ public class HotelDto {
     private Integer numberOfRooms;
 
 
-
     public String getCity() {
         return city;
     }

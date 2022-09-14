@@ -1,38 +1,10 @@
-package com.raf.example.HotelReservationService.domain;
+package com.raf.example.HotelReservationService.dto;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
-@Entity
-public class Room {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotNull
+public class RoomDto {
     private Long hotelId;
-
-    @NotNull
     private Integer roomNumber;
-
-    @NotNull
     private String type;
-
-    @NotNull
     private Integer pricePerDay;
-
-    public Room(Long hotelId, Integer roomNumber, String type, Integer pricePerDay) {
-        this.hotelId = hotelId;
-        this.roomNumber = roomNumber;
-        this.type = type;
-        this.pricePerDay = pricePerDay;
-    }
-
-    public Room() {}
-
-    public Long getId() {
-        return id;
-    }
 
     public Long getHotelId() {
         return hotelId;
@@ -65,5 +37,4 @@ public class Room {
     public void setPricePerDay(Integer pricePerDay) {
         this.pricePerDay = pricePerDay;
     }
-
 }
