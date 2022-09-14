@@ -3,6 +3,7 @@ package com.raf.example.HotelReservationService.controller;
 import com.raf.example.HotelReservationService.dto.HotelDto;
 import com.raf.example.HotelReservationService.dto.PriceChangeDto;
 import com.raf.example.HotelReservationService.secutiry.CheckSecurity;
+import com.raf.example.HotelReservationService.secutiry.SecurityAspect;
 import com.raf.example.HotelReservationService.service.HotelService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -16,36 +17,28 @@ import javax.validation.Valid;
 public class HotelController {
 
     private HotelService hotelService;
+    private SecurityAspect securityAspect;
 
-    public HotelController(HotelService hotelService) {
+    public HotelController(HotelService hotelService, SecurityAspect securityAspect) {
         this.hotelService = hotelService;
+        this.securityAspect = securityAspect;
     }
 
-    @PostMapping("/changeHotelName")
-    @ApiOperation(value = "change hotel name")
+    @PostMapping("/addHotel")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
-    public ResponseEntity<HotelDto> changeHotelName(@RequestHeader("authorization") String authorization, String newHotelName) {
-        return new ResponseEntity<>(hotelService.changeHotelName(authorization.split(" ")[1], newHotelName), HttpStatus.CREATED);
+    public ResponseEntity<HotelDto> addHotel(@RequestHeader("authorization") String authorization,
+                                                      @RequestBody @Valid HotelDto hotelDto) {
+        Long managerId = securityAspect.getUserId(authorization);
+        return new ResponseEntity<>(hotelService.addHotel(managerId,hotelDto), HttpStatus.CREATED);
     }
 
-    @PostMapping("/changeNumberOrRooms")
-    @ApiOperation(value = "change number of hotel rooms")
+    @PutMapping("/updateManager")
+    @ApiOperation(value = "manager update")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
-    public ResponseEntity<HotelDto> changeNumOfHotelRooms(@RequestHeader("authorization") String authorization, Integer newNumOfRooms) {
-        return new ResponseEntity<>(hotelService.changeNumOfHotelRooms(authorization.split(" ")[1], newNumOfRooms), HttpStatus.CREATED);
+    public ResponseEntity<HotelDto> updateManager(@RequestHeader("authorization") String authorization,
+                                                    @RequestBody HotelDto hotelDto){
+        Long managerId = securityAspect.getUserId(authorization);
+        return new ResponseEntity<>(hotelService.update(managerId, hotelDto), HttpStatus.OK);
     }
 
-    @PostMapping("/chagePriceForRoomType")
-    @ApiOperation(value = "change price for room type")
-    @CheckSecurity(roles = {"ROLE_MANAGER"})
-    public ResponseEntity<PriceChangeDto> changePriceForRoomType(@RequestHeader("authorization") String authorization, PriceChangeDto priceChangeDto) {
-        return new ResponseEntity<>(hotelService.changePriceForRoomType(authorization.split(" ")[1], priceChangeDto), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/changeDescription")
-    @ApiOperation(value = "change description")
-    @CheckSecurity(roles = {"ROLE_MANAGER"})
-    public ResponseEntity<HotelDto> changeHotelDescription(@RequestHeader("authorization") String authorization, String newDescription) {
-        return new ResponseEntity<>(hotelService.changeHotelDescription(authorization.split(" ")[1], newDescription), HttpStatus.CREATED);
-    }
 }

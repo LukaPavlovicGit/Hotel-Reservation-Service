@@ -3,5 +3,8 @@ package com.raf.example.HotelReservationService.repository;
 import com.raf.example.HotelReservationService.domain.Hotel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
+    Optional<Hotel> findHotelByManagerId(Long managerId);
 }

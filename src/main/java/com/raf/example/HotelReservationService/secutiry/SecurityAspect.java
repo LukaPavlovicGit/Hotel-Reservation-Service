@@ -1,5 +1,8 @@
 package com.raf.example.HotelReservationService.secutiry;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.raf.example.HotelReservationService.dto.PayloadWrapper;
 import com.raf.example.HotelReservationService.secutiry.tokenService.TokenService;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Base64;
 
 
 @AllArgsConstructor
@@ -28,6 +32,8 @@ public class SecurityAspect {
     private String jwtSecret;
 
     private TokenService tokenService;
+
+    private Base64.Decoder decoder = Base64.getUrlDecoder();
 
     public SecurityAspect(TokenService tokenService) {
         this.tokenService = tokenService;
@@ -72,5 +78,29 @@ public class SecurityAspect {
         //Return FORBIDDEN if user hasn't appropriate role for specified route
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
+
+    public Long getUserId(String authorization){
+        String token = authorization.split(" ")[1];
+        String payload = token.split("\\.")[1];
+        String decodedJSON = new String(decoder.decode(payload));
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        PayloadWrapper payloadWrapper = gson.fromJson(decodedJSON, PayloadWrapper.class);
+        return payloadWrapper.getId();
+    }
+
+    /*
+    // zasto ne je claims null ?
+    public Long getUserId(String authorization) {
+        String token = authorization.split(" ")[1];
+        Claims claims = tokenService.parseToken(token);
+        return claims.get("id", Integer.class).longValue();
+    }
+
+    public String getUserEmail(String authorization) {
+        String token = authorization.split(" ")[1];
+        Claims claims = tokenService.parseToken(token);
+        return claims.get("email", String.class);
+    }
+    */
 
 }

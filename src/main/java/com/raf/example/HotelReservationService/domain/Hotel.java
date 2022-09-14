@@ -26,15 +26,8 @@ public class Hotel {
     @NotNull
     private Integer numberOfRooms;
 
-    public Hotel(Long managerId, String city, String name, String description, Integer numberOfRooms) {
-        this.managerId = managerId;
-        this.city = city;
-        this.name = name;
-        this.description = description;
-        this.numberOfRooms = numberOfRooms;
-    }
-
     public Hotel() {}
+
 
     public Long getId() {
         return id;
