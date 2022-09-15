@@ -1,6 +1,7 @@
 package com.raf.example.HotelReservationService.controller;
 
 import com.raf.example.HotelReservationService.domain.Reservation;
+import com.raf.example.HotelReservationService.dto.ReservationDto;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.secutiry.CheckSecurity;
 import com.raf.example.HotelReservationService.secutiry.SecurityAspect;
@@ -27,10 +28,10 @@ public class ReservationController {
 
     @PostMapping
     @CheckSecurity(roles = {"ROLE_CLIENT"})
-    public ResponseEntity<Reservation> addNewReservation(@RequestHeader("Authorization") String authorization,
-                                                         @RequestBody Reservation reservation) {
-        reservation.setUserId(securityAspect.getUserId(authorization));
-        //reservation.setUserEmail(securityAspect.getUserEmail(authorization));
-        return new ResponseEntity<>(reservationService.addReservation(reservation), HttpStatus.CREATED);
+    public ResponseEntity<Reservation> addNewReservation(@RequestHeader("Authorization") String authorization, @RequestBody ReservationDto reservationDto) {
+        Long clientId = securityAspect.getUserAttribute(authorization, "USER_ID");
+        String clientEmail = securityAspect.getUserAttribute(authorization, "USER_EMAIL");
+        System.out.println(clientEmail + " " + clientId);
+        return new ResponseEntity<>(reservationService.addReservation(clientId, reservationDto), HttpStatus.CREATED);
     }
 }

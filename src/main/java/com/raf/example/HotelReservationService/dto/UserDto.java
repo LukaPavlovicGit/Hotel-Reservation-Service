@@ -3,11 +3,10 @@ package com.raf.example.HotelReservationService.dto;
 import java.util.Date;
 
 public class UserDto {
+
     private Long id;
     private String username;
-
-    private String password;
-
+    
     private String firstName;
 
     private String lastName;
@@ -59,14 +58,6 @@ public class UserDto {
         this.lastName = lastName;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -81,5 +72,17 @@ public class UserDto {
 
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", birthdate=" + birthdate +
+                '}';
     }
 }

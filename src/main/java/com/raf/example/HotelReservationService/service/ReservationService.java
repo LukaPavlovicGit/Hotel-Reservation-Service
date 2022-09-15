@@ -3,13 +3,14 @@ package com.raf.example.HotelReservationService.service;
 import com.raf.example.HotelReservationService.domain.Hotel;
 import com.raf.example.HotelReservationService.domain.Reservation;
 import com.raf.example.HotelReservationService.domain.Room;
-import com.raf.example.HotelReservationService.dto.FiltersDto;
-import com.raf.example.HotelReservationService.dto.IncrementReservationDto;
-import com.raf.example.HotelReservationService.dto.RoomDto;
+import com.raf.example.HotelReservationService.dto.*;
+import com.raf.example.HotelReservationService.exception.OperationNotAllowed;
 import com.raf.example.HotelReservationService.messageHelper.MessageHelper;
 import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.repository.RoomRepository;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +29,7 @@ public class ReservationService {
     private HotelRepository hotelRepository;
     private ReservationRepository reservationRepository;
     private JmsTemplate jmsTemplate;
-
     private MessageHelper messageHelper;
-
     private RestTemplate userServiceRestTemplate;
 
     public ReservationService(RoomRepository roomRepository, HotelRepository hotelRepository, ReservationRepository reservationRepository,
@@ -128,7 +127,22 @@ public class ReservationService {
         return roomsDto;
     }
 
-    public Reservation addReservation(Reservation reservation){
+    public Reservation addReservation(Long clientId, ReservationDto reservationDto){
+
+        List<Reservation> reservations = reservationRepository.findAllByRoomId(reservationDto.getRoomId());
+
+        for(Reservation r : reservations){
+            if(reservationDto.getEndDate().isBefore(r.getStartDate()) || reservationDto.getStartDate().isAfter(r.getEndDate()))
+                continue;
+
+            throw new OperationNotAllowed("Room not available in chosen period.");
+        }
+
+        Room room = roomRepository.findById(reservationDto.getRoomId()).get();
+
+       /* ResponseEntity<UserDto> response = userServiceRestTemplate.exchange("/user/" +
+                clientId + "/discount", HttpMethod.GET, null, DiscountDto.class);
+        */
         IncrementReservationDto incrementReservationDto = new IncrementReservationDto();
         incrementReservationDto.setUserId(3L);
         jmsTemplate. convertAndSend("increment_queue", messageHelper.createTextMessage(new IncrementReservationDto()));

@@ -38,6 +38,18 @@ public class Reservation {
 
     public Reservation() {}
 
+    public Reservation(Long userId, String userEmail, Long hotelId, Long roomId,
+                       LocalDate startDate, LocalDate endDate, Integer totalPrice, Boolean sentReminder) {
+        this.userId = userId;
+        this.userEmail = userEmail;
+        this.hotelId = hotelId;
+        this.roomId = roomId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.totalPrice = totalPrice;
+        this.sentReminder = sentReminder;
+    }
+
     public Long getId() {
         return id;
     }

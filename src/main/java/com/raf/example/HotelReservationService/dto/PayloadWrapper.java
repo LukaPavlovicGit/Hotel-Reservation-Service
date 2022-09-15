@@ -3,7 +3,6 @@ package com.raf.example.HotelReservationService.dto;
 public class PayloadWrapper {
     private Long id;
     private String role;
-
     private String email;
 
     public PayloadWrapper(){ }
@@ -30,5 +29,12 @@ public class PayloadWrapper {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public <T> T getAttribute(String attribute){
+        if(attribute.equals("USER_ID")) return (T) id;
+        if(attribute.equals("USER_TOLE")) return (T) role;
+        if(attribute.equals("USER_EMAIL")) return (T) email;
+        return null;
     }
 }
