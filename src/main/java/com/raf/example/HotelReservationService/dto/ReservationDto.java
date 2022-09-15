@@ -1,24 +1,19 @@
 package com.raf.example.HotelReservationService.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.Transient;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class ReservationDto {
 
-    @NotNull
     private Long roomId;
-
     private Long clientId;
 
-    private String userEmail;
-
-    @NotNull
+    private String clientEmail;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
-
-    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
@@ -26,7 +21,13 @@ public class ReservationDto {
 
     }
 
-
+    public ReservationDto(Long roomId, Long clientId, String clientEmail, LocalDate startDate, LocalDate endDate) {
+        this.roomId = roomId;
+        this.clientId = clientId;
+        this.clientEmail = clientEmail;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 
     public Long getRoomId() {
         return roomId;
@@ -60,11 +61,11 @@ public class ReservationDto {
         this.clientId = clientId;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public String getClientEmail() {
+        return clientEmail;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setClientEmail(String clientEmail) {
+        this.clientEmail = clientEmail;
     }
 }

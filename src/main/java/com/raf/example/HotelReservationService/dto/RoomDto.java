@@ -4,7 +4,7 @@ public class RoomDto {
     private Long hotelId;
     private Integer roomNumber;
     private String type;
-    private Integer pricePerDay;
+    private Double pricePerDay;
 
     public Long getHotelId() {
         return hotelId;
@@ -30,11 +30,11 @@ public class RoomDto {
         this.type = type;
     }
 
-    public Integer getPricePerDay() {
+    public Double getPricePerDay() {
         return pricePerDay;
     }
 
-    public void setPricePerDay(Integer pricePerDay) {
+    public void setPricePerDay(Double pricePerDay) {
         this.pricePerDay = pricePerDay;
     }
 }

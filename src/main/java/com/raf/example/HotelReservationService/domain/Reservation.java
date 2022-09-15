@@ -32,14 +32,14 @@ public class Reservation {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    private Integer totalPrice;
+    private Double totalPrice;
     private Boolean sentReminder;
 
 
     public Reservation() {}
 
     public Reservation(Long userId, String userEmail, Long hotelId, Long roomId,
-                       LocalDate startDate, LocalDate endDate, Integer totalPrice, Boolean sentReminder) {
+                       LocalDate startDate, LocalDate endDate, Double totalPrice, Boolean sentReminder) {
         this.userId = userId;
         this.userEmail = userEmail;
         this.hotelId = hotelId;
@@ -102,11 +102,11 @@ public class Reservation {
         this.endDate = endDate;
     }
 
-    public Integer getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Integer totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

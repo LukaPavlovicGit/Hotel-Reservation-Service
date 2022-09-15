@@ -19,9 +19,9 @@ public class Room {
     private String type;
 
     @NotNull
-    private Integer pricePerDay;
+    private Double pricePerDay;
 
-    public Room(Long hotelId, Integer roomNumber, String type, Integer pricePerDay) {
+    public Room(Long hotelId, Integer roomNumber, String type, Double pricePerDay) {
         this.hotelId = hotelId;
         this.roomNumber = roomNumber;
         this.type = type;
@@ -58,11 +58,11 @@ public class Room {
         this.type = type;
     }
 
-    public Integer getPricePerDay() {
+    public Double getPricePerDay() {
         return pricePerDay;
     }
 
-    public void setPricePerDay(Integer pricePerDay) {
+    public void setPricePerDay(Double pricePerDay) {
         this.pricePerDay = pricePerDay;
     }
 

@@ -1,5 +1,6 @@
 package com.raf.example.HotelReservationService.service;
 
+import com.raf.example.HotelReservationService.clientUserService.dto.DiscountDto;
 import com.raf.example.HotelReservationService.domain.Hotel;
 import com.raf.example.HotelReservationService.domain.Reservation;
 import com.raf.example.HotelReservationService.domain.Room;
@@ -9,6 +10,7 @@ import com.raf.example.HotelReservationService.messageHelper.MessageHelper;
 import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.repository.RoomRepository;
+import io.github.resilience4j.retry.Retry;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +34,7 @@ public class ReservationService {
     private JmsTemplate jmsTemplate;
     private MessageHelper messageHelper;
     private RestTemplate userServiceRestTemplate;
+    private Retry userServiceRetry;
 
     public ReservationService(RoomRepository roomRepository, HotelRepository hotelRepository, ReservationRepository reservationRepository,
                               JmsTemplate jmsTemplate, MessageHelper messageHelper, RestTemplate userServiceRestTemplate) {
@@ -100,7 +104,7 @@ public class ReservationService {
                 Collections.sort(rooms, new Comparator<Room>() {
                     @Override
                     public int compare(Room o1, Room o2) {
-                        return o1.getPricePerDay() - o2.getPricePerDay();
+                        return Double.compare(o1.getPricePerDay(),o2.getPricePerDay());
                     }
                 });
             }
@@ -108,7 +112,7 @@ public class ReservationService {
                 Collections.sort(rooms, new Comparator<Room>() {
                     @Override
                     public int compare(Room o1, Room o2) {
-                        return o2.getPricePerDay() - o1.getPricePerDay();
+                        return Double.compare(o1.getPricePerDay(),o2.getPricePerDay());
                     }
                 });
             }
@@ -127,10 +131,9 @@ public class ReservationService {
         return roomsDto;
     }
 
-    public Reservation addReservation(Long clientId, ReservationDto reservationDto){
+    public ReservationDto addReservation(ReservationDto reservationDto){
 
         List<Reservation> reservations = reservationRepository.findAllByRoomId(reservationDto.getRoomId());
-
         for(Reservation r : reservations){
             if(reservationDto.getEndDate().isBefore(r.getStartDate()) || reservationDto.getStartDate().isAfter(r.getEndDate()))
                 continue;
@@ -140,13 +143,19 @@ public class ReservationService {
 
         Room room = roomRepository.findById(reservationDto.getRoomId()).get();
 
-       /* ResponseEntity<UserDto> response = userServiceRestTemplate.exchange("/user/" +
-                clientId + "/discount", HttpMethod.GET, null, DiscountDto.class);
-        */
-        IncrementReservationDto incrementReservationDto = new IncrementReservationDto();
-        incrementReservationDto.setUserId(3L);
-        jmsTemplate. convertAndSend("increment_queue", messageHelper.createTextMessage(new IncrementReservationDto()));
-        return null;
+        //get discount from user service
+        ResponseEntity<DiscountDto> discountDtoResponseEntity =  Retry.decorateSupplier(userServiceRetry, () -> userServiceRestTemplate.exchange("/user/" +
+                reservationDto.getClientId() + "/discount", HttpMethod.GET, null, DiscountDto.class)).get();
+
+        Double totalPrice = room.getPricePerDay() *
+                (Period.between(reservationDto.getStartDate(), reservationDto.getEndDate()).getDays() + 1);
+        totalPrice-= totalPrice*(discountDtoResponseEntity.getBody().getDiscount()/100);
+
+        Reservation reservation = new Reservation(reservationDto.getClientId(), reservationDto.getClientEmail(), room.getHotelId(), room.getId(),
+                                                    reservationDto.getStartDate(), reservationDto.getEndDate(), totalPrice, true);
+        reservationRepository.save(reservation);
+        jmsTemplate. convertAndSend("increment_queue", messageHelper.createTextMessage(new IncrementReservationDto(reservationDto.getClientId())));
+        return reservationDto;
     }
 
 }
