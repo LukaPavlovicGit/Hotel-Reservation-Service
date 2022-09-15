@@ -1,19 +1,20 @@
 package com.raf.example.HotelReservationService.service;
 
-import com.fasterxml.jackson.annotation.OptBoolean;
 import com.raf.example.HotelReservationService.domain.Hotel;
 import com.raf.example.HotelReservationService.domain.Reservation;
 import com.raf.example.HotelReservationService.domain.Room;
 import com.raf.example.HotelReservationService.dto.FiltersDto;
+import com.raf.example.HotelReservationService.dto.IncrementReservationDto;
 import com.raf.example.HotelReservationService.dto.RoomDto;
+import com.raf.example.HotelReservationService.messageHelper.MessageHelper;
 import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.repository.RoomRepository;
-import org.hibernate.mapping.Collection;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -25,13 +26,21 @@ public class ReservationService {
 
     private RoomRepository roomRepository;
     private HotelRepository hotelRepository;
-
     private ReservationRepository reservationRepository;
+    private JmsTemplate jmsTemplate;
 
-    public ReservationService(RoomRepository roomRepository, HotelRepository hotelRepository, ReservationRepository reservationRepository) {
+    private MessageHelper messageHelper;
+
+    private RestTemplate userServiceRestTemplate;
+
+    public ReservationService(RoomRepository roomRepository, HotelRepository hotelRepository, ReservationRepository reservationRepository,
+                              JmsTemplate jmsTemplate, MessageHelper messageHelper, RestTemplate userServiceRestTemplate) {
         this.roomRepository = roomRepository;
         this.hotelRepository = hotelRepository;
         this.reservationRepository = reservationRepository;
+        this.jmsTemplate = jmsTemplate;
+        this.messageHelper = messageHelper;
+        this.userServiceRestTemplate = userServiceRestTemplate;
     }
 
     public List<RoomDto> listAvailableRooms(FiltersDto filtersDto){
@@ -118,4 +127,12 @@ public class ReservationService {
 
         return roomsDto;
     }
+
+    public Reservation addReservation(Reservation reservation){
+        IncrementReservationDto incrementReservationDto = new IncrementReservationDto();
+        incrementReservationDto.setUserId(3L);
+        jmsTemplate. convertAndSend("increment_queue", messageHelper.createTextMessage(new IncrementReservationDto()));
+        return null;
+    }
+
 }

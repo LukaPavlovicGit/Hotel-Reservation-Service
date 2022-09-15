@@ -88,6 +88,15 @@ public class SecurityAspect {
         return payloadWrapper.getId();
     }
 
+    public String getUserEmail(String authorization){
+        String token = authorization.split(" ")[1];
+        String payload = token.split("\\.")[1];
+        String decodedJSON = new String(decoder.decode(payload));
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        PayloadWrapper payloadWrapper = gson.fromJson(decodedJSON, PayloadWrapper.class);
+        return payloadWrapper.getEmail();
+    }
+
     /*
     // zasto ne je claims null ?
     public Long getUserId(String authorization) {
