@@ -21,13 +21,11 @@ import java.time.LocalDate;
 public class ReservationController {
 
     private SecurityAspect securityAspect;
-    private ReservationRepository reservationRepository;
 
     private ReservationService reservationService;
 
-    public ReservationController(SecurityAspect securityAspect, ReservationRepository reservationRepository, ReservationService reservationService) {
+    public ReservationController(SecurityAspect securityAspect, ReservationService reservationService) {
         this.securityAspect = securityAspect;
-        this.reservationRepository = reservationRepository;
         this.reservationService = reservationService;
     }
 
@@ -40,5 +38,12 @@ public class ReservationController {
         Long clientId = securityAspect.getUserId(authorization);
         String clientEmail = securityAspect.getUserEmail(authorization);
         return new ResponseEntity<>(reservationService.addReservation(new ReservationDto(roomId,clientId,clientEmail,startDate,endDate)), HttpStatus.CREATED);
+    }
+
+    @PostMapping
+    @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
+    public ResponseEntity<Reservation> removeReservation(@RequestHeader("Authorization") String authorization, Long reservationId) {
+
+        return new ResponseEntity<>(reservationService.removeReservation(reservationId), HttpStatus.OK);
     }
 }

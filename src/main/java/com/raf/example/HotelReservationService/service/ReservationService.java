@@ -100,22 +100,10 @@ public class ReservationService {
         }
 
         if(filtersDto.getSort() != null){
-            if(filtersDto.getSort().equalsIgnoreCase("ASC")){
-                Collections.sort(rooms, new Comparator<Room>() {
-                    @Override
-                    public int compare(Room o1, Room o2) {
-                        return Double.compare(o1.getPricePerDay(),o2.getPricePerDay());
-                    }
-                });
-            }
-            else if(filtersDto.getSort().equalsIgnoreCase("DESC")){
-                Collections.sort(rooms, new Comparator<Room>() {
-                    @Override
-                    public int compare(Room o1, Room o2) {
-                        return Double.compare(o1.getPricePerDay(),o2.getPricePerDay());
-                    }
-                });
-            }
+            if(filtersDto.getSort().equalsIgnoreCase("ASC"))
+                Collections.sort(rooms, (o1, o2) -> Double.compare(o1.getPricePerDay(),o2.getPricePerDay()));
+            else if(filtersDto.getSort().equalsIgnoreCase("DESC"))
+                Collections.sort(rooms, (o1, o2) -> Double.compare(o2.getPricePerDay(),o1.getPricePerDay()));
         }
         List<RoomDto> roomsDto = new ArrayList<>();
         for(Room room : rooms){
@@ -137,12 +125,9 @@ public class ReservationService {
         for(Reservation r : reservations){
             if(reservationDto.getEndDate().isBefore(r.getStartDate()) || reservationDto.getStartDate().isAfter(r.getEndDate()))
                 continue;
-
             throw new OperationNotAllowed("Room not available in chosen period.");
         }
-
         Room room = roomRepository.findById(reservationDto.getRoomId()).get();
-
         //get discount from user service
         ResponseEntity<DiscountDto> discountDtoResponseEntity =  Retry.decorateSupplier(userServiceRetry, () -> userServiceRestTemplate.exchange("/user/" +
                 reservationDto.getClientId() + "/discount", HttpMethod.GET, null, DiscountDto.class)).get();
@@ -151,11 +136,26 @@ public class ReservationService {
                 (Period.between(reservationDto.getStartDate(), reservationDto.getEndDate()).getDays() + 1);
         totalPrice-= totalPrice*(discountDtoResponseEntity.getBody().getDiscount()/100);
 
-        Reservation reservation = new Reservation(reservationDto.getClientId(), reservationDto.getClientEmail(), room.getHotelId(), room.getId(),
-                                                    reservationDto.getStartDate(), reservationDto.getEndDate(), totalPrice, true);
-        reservationRepository.save(reservation);
-        jmsTemplate. convertAndSend("increment_queue", messageHelper.createTextMessage(new IncrementReservationDto(reservationDto.getClientId())));
+        reservationRepository.save(new Reservation(reservationDto.getClientId(), reservationDto.getClientEmail(), room.getHotelId(), room.getId(),
+                reservationDto.getStartDate(), reservationDto.getEndDate(), totalPrice, true));
+
+        jmsTemplate. convertAndSend("increment_reservation_queue",
+                messageHelper.createTextMessage(new IncrementReservationDto(reservationDto.getClientId(), true)));
         return reservationDto;
+    }
+
+    public Reservation removeReservation(Long reservationId){
+
+        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+        if(reservationOptional.isPresent()){
+            Reservation reservation = reservationOptional.get();
+            reservationRepository.deleteById(reservation.getId());
+            jmsTemplate. convertAndSend("increment_reservation_queue",
+                    messageHelper.createTextMessage(new IncrementReservationDto(reservation.getUserId(), false)));
+            return reservation;
+        }
+
+        return null;
     }
 
 }
