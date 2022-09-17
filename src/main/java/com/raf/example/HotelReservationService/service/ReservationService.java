@@ -5,6 +5,7 @@ import com.raf.example.HotelReservationService.domain.Hotel;
 import com.raf.example.HotelReservationService.domain.Reservation;
 import com.raf.example.HotelReservationService.domain.Room;
 import com.raf.example.HotelReservationService.dto.*;
+import com.raf.example.HotelReservationService.exception.NotFoundException;
 import com.raf.example.HotelReservationService.exception.OperationNotAllowed;
 import com.raf.example.HotelReservationService.messageHelper.MessageHelper;
 import com.raf.example.HotelReservationService.repository.HotelRepository;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class ReservationService {
-
     private RoomRepository roomRepository;
     private HotelRepository hotelRepository;
     private ReservationRepository reservationRepository;
@@ -44,60 +44,6 @@ public class ReservationService {
         this.jmsTemplate = jmsTemplate;
         this.messageHelper = messageHelper;
         this.userServiceRestTemplate = userServiceRestTemplate;
-    }
-
-    public List<RoomDto> listAvailableRooms(AvailableRoomsFilterDto availableRoomsFilterDto){
-        List<Room> rooms = roomRepository.findAll();
-
-        if(rooms == null)
-            return null;
-        
-        rooms = rooms.stream()
-                .filter(r -> {
-                    Optional<Reservation> reservationOptional = reservationRepository.findByRoomId(r.getId());
-                    if(reservationOptional.isPresent()) {
-                        Reservation reservation = reservationOptional.get();
-                        Hotel hotel = hotelRepository.findById(reservation.getHotelId()).get();
-                        if(availableRoomsFilterDto.getCity() != null && !availableRoomsFilterDto.getCity().equalsIgnoreCase(hotel.getCity()))
-                            return false;
-
-                        if(availableRoomsFilterDto.getHotelName() != null && availableRoomsFilterDto.getHotelName().equalsIgnoreCase(hotel.getName()))
-                            return false;
-
-                        if(availableRoomsFilterDto.getStartDate() != null && availableRoomsFilterDto.getEndDate() != null &&
-                                availableRoomsFilterDto.getStartDate().isBefore(availableRoomsFilterDto.getEndDate())) {
-
-                            if(!availableRoomsFilterDto.getEndDate().isBefore(reservation.getStartDate()) || !availableRoomsFilterDto.getStartDate().isAfter(reservation.getEndDate()))
-                                return false;
-                        }else {
-                            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                            return now.isBefore(reservation.getStartDate()) || now.isAfter(reservation.getEndDate());
-                        }
-                    }
-                    return true;
-                })
-                .collect(Collectors.toList());
-
-
-        if(availableRoomsFilterDto.getSort() != null){
-            if(availableRoomsFilterDto.getSort().equalsIgnoreCase("ASC"))
-                Collections.sort(rooms, (o1, o2) -> Double.compare(o1.getPricePerDay(),o2.getPricePerDay()));
-            else if(availableRoomsFilterDto.getSort().equalsIgnoreCase("DESC"))
-                Collections.sort(rooms, (o1, o2) -> Double.compare(o2.getPricePerDay(),o1.getPricePerDay()));
-        }
-        
-        List<RoomDto> roomsDto = new ArrayList<>();
-        for(Room room : rooms){
-            RoomDto roomDto = new RoomDto();
-            roomDto.setRoomNumber(room.getRoomNumber());
-            roomDto.setType(room.getType());
-            roomDto.setPricePerDay(room.getPricePerDay());
-            roomDto.setHotelId(roomDto.getHotelId());
-
-            roomsDto.add(roomDto);
-        }
-
-        return roomsDto;
     }
 
     public ReservationDto addReservation(ReservationDto reservationDto){
@@ -125,18 +71,23 @@ public class ReservationService {
         return reservationDto;
     }
 
-    public Reservation removeReservation(Long reservationId){
+    public Reservation removeReservation(Long reservationId, Long userId, String role){
 
         Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
         if(reservationOptional.isPresent()){
             Reservation reservation = reservationOptional.get();
+
+            if(role.equals("ROLE_CLIENT")) {
+                if (reservation.getUserId() != userId)
+                    throw new OperationNotAllowed(String.format("Client not allowed to delete reservation with id %s.", reservationId));
+            }
+
             reservationRepository.deleteById(reservation.getId());
             jmsTemplate. convertAndSend("increment_reservation_queue",
                     messageHelper.createTextMessage(new IncrementReservationDto(reservation.getUserId(), false)));
             return reservation;
         }
 
-        return null;
+        throw new NotFoundException(String.format("Reservation with id %s not found.", reservationId));
     }
-
 }

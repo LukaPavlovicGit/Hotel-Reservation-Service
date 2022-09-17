@@ -44,6 +44,8 @@ public class ReservationController {
     @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
     public ResponseEntity<Reservation> removeReservation(@RequestHeader("Authorization") String authorization, Long reservationId) {
 
-        return new ResponseEntity<>(reservationService.removeReservation(reservationId), HttpStatus.OK);
+        Long clientId = securityAspect.getUserId(authorization);
+        String userRole = securityAspect.getUserRole(authorization);
+        return new ResponseEntity<>(reservationService.removeReservation(reservationId, clientId, userRole), HttpStatus.OK);
     }
 }
