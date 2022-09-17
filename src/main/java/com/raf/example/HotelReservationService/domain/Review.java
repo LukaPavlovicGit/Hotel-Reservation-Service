@@ -23,6 +23,7 @@ public class Review {
     @Max(5)
     @NotNull
     private Integer rating;
+    @NotNull
     private String comment;
 
     public Review() {}
@@ -64,5 +65,13 @@ public class Review {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

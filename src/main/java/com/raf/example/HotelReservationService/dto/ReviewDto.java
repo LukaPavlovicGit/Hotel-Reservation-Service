@@ -1,15 +1,23 @@
 package com.raf.example.HotelReservationService.dto;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class ReviewDto {
     private Long reservationId;
-    private Integer rate;
+    @Min(1)
+    @Max(5)
+    @NotNull
+    private Integer rating;
+    @NotNull
     private String comment;
 
     public ReviewDto(){}
 
     public ReviewDto(Long reservationId, Integer rate, String comment) {
         this.reservationId = reservationId;
-        this.rate = rate;
+        this.rating = rate;
         this.comment = comment;
     }
 
@@ -21,12 +29,12 @@ public class ReviewDto {
         this.reservationId = reservationId;
     }
 
-    public Integer getRate() {
-        return rate;
+    public Integer getRating() {
+        return rating;
     }
 
-    public void setRate(Integer rate) {
-        this.rate = rate;
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 
     public String getComment() {

@@ -2,11 +2,8 @@ package com.raf.example.HotelReservationService.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(indexes = {@Index(columnList = "name", unique = true)})
 public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +24,6 @@ public class Hotel {
     private Integer numberOfRooms;
 
     public Hotel() {}
-
 
     public Long getId() {
         return id;

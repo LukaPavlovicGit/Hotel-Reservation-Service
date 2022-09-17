@@ -1,9 +1,6 @@
 package com.raf.example.HotelReservationService.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.data.annotation.Transient;
-
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class ReservationDto {

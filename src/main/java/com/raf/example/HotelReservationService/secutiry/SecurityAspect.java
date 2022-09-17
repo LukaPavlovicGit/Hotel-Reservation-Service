@@ -1,8 +1,5 @@
 package com.raf.example.HotelReservationService.secutiry;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.raf.example.HotelReservationService.dto.PayloadWrapper;
 import com.raf.example.HotelReservationService.secutiry.tokenService.TokenService;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
@@ -91,6 +88,13 @@ public class SecurityAspect {
         token = token.substring(1, token.length()-1);
         Claims claims = tokenService.parseToken(token);
         return claims.get("email", String.class);
+    }
+
+    public String getUserRole(String authorization) {
+        String token = authorization.split(" ")[1];
+        token = token.substring(1, token.length()-1);
+        Claims claims = tokenService.parseToken(token);
+        return claims.get("role", String.class);
     }
 
 }

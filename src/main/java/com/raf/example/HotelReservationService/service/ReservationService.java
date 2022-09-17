@@ -46,7 +46,7 @@ public class ReservationService {
         this.userServiceRestTemplate = userServiceRestTemplate;
     }
 
-    public List<RoomDto> listAvailableRooms(FiltersDto filtersDto){
+    public List<RoomDto> listAvailableRooms(AvailableRoomsFilterDto availableRoomsFilterDto){
         List<Room> rooms = roomRepository.findAll();
 
         if(rooms == null)
@@ -57,54 +57,35 @@ public class ReservationService {
                     Optional<Reservation> reservationOptional = reservationRepository.findByRoomId(r.getId());
                     if(reservationOptional.isPresent()) {
                         Reservation reservation = reservationOptional.get();
-                        LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                        return now.isBefore(reservation.getStartDate()) || now.isAfter(reservation.getEndDate());
+                        Hotel hotel = hotelRepository.findById(reservation.getHotelId()).get();
+                        if(availableRoomsFilterDto.getCity() != null && !availableRoomsFilterDto.getCity().equalsIgnoreCase(hotel.getCity()))
+                            return false;
+
+                        if(availableRoomsFilterDto.getHotelName() != null && availableRoomsFilterDto.getHotelName().equalsIgnoreCase(hotel.getName()))
+                            return false;
+
+                        if(availableRoomsFilterDto.getStartDate() != null && availableRoomsFilterDto.getEndDate() != null &&
+                                availableRoomsFilterDto.getStartDate().isBefore(availableRoomsFilterDto.getEndDate())) {
+
+                            if(!availableRoomsFilterDto.getEndDate().isBefore(reservation.getStartDate()) || !availableRoomsFilterDto.getStartDate().isAfter(reservation.getEndDate()))
+                                return false;
+                        }else {
+                            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                            return now.isBefore(reservation.getStartDate()) || now.isAfter(reservation.getEndDate());
+                        }
                     }
                     return true;
                 })
                 .collect(Collectors.toList());
 
-        if(filtersDto.getCity() != null){
-            rooms = rooms.stream()
-                    .filter(r -> {
-                        Optional<Hotel> hotelOptional = hotelRepository.findById(r.getHotelId());
-                        if(hotelOptional.isPresent()){
-                            return filtersDto.getCity().equalsIgnoreCase(hotelOptional.get().getCity());
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toList());
-        }
-        if(filtersDto.getHotelName() != null){
-            rooms = rooms.stream()
-                    .filter(r -> {
-                        Optional<Hotel> hotelOptional = hotelRepository.findById(r.getHotelId());
-                        if(hotelOptional.isPresent()){
-                            return filtersDto.getHotelName().equalsIgnoreCase(hotelOptional.get().getName());
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toList());
-        }
-        if(filtersDto.getEndDate() != null && filtersDto.getEndDate() != null && filtersDto.getStartDate().isBefore(filtersDto.getEndDate())){
-            rooms = rooms.stream()
-                    .filter(r -> {
-                        Optional<Reservation> reservationOptional = reservationRepository.findByRoomId(r.getId());
-                        if(reservationOptional.isPresent()){
-                            Reservation reservation = reservationOptional.get();
-                            return reservation.getStartDate().isAfter(filtersDto.getEndDate()) || reservation.getEndDate().isBefore(filtersDto.getStartDate());
-                        }
-                        return true;
-                    })
-                    .collect(Collectors.toList());
-        }
 
-        if(filtersDto.getSort() != null){
-            if(filtersDto.getSort().equalsIgnoreCase("ASC"))
+        if(availableRoomsFilterDto.getSort() != null){
+            if(availableRoomsFilterDto.getSort().equalsIgnoreCase("ASC"))
                 Collections.sort(rooms, (o1, o2) -> Double.compare(o1.getPricePerDay(),o2.getPricePerDay()));
-            else if(filtersDto.getSort().equalsIgnoreCase("DESC"))
+            else if(availableRoomsFilterDto.getSort().equalsIgnoreCase("DESC"))
                 Collections.sort(rooms, (o1, o2) -> Double.compare(o2.getPricePerDay(),o1.getPricePerDay()));
         }
+        
         List<RoomDto> roomsDto = new ArrayList<>();
         for(Room room : rooms){
             RoomDto roomDto = new RoomDto();

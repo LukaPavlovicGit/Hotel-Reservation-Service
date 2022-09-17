@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 
-public class FiltersDto {
+public class AvailableRoomsFilterDto {
     private String hotelName;
     private String city;
     @JsonFormat(pattern = "yyyy-MM-dd")
