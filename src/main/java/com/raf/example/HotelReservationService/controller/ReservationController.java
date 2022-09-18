@@ -40,9 +40,9 @@ public class ReservationController {
         return new ResponseEntity<>(reservationService.addReservation(new ReservationDto(roomId,clientId,clientEmail,startDate,endDate)), HttpStatus.CREATED);
     }
 
-    @PostMapping
+    @DeleteMapping(path = "/{id}")
     @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
-    public ResponseEntity<Reservation> removeReservation(@RequestHeader("Authorization") String authorization, Long reservationId) {
+    public ResponseEntity<Reservation> removeReservation(@RequestHeader("Authorization") String authorization, @PathVariable Long reservationId) {
 
         Long clientId = securityAspect.getUserId(authorization);
         String userRole = securityAspect.getUserRole(authorization);

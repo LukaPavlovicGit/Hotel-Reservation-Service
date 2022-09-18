@@ -41,7 +41,7 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.getReviews(hotelName,city), HttpStatus.OK);
     }
 
-    @PostMapping("/removeComment")
+    @DeleteMapping
     @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
     @ApiOperation(value = "remove comment")
     public ResponseEntity<ReviewDto> removeReview(@RequestHeader("authorization") String authorization,
@@ -55,7 +55,7 @@ public class ReviewController {
     @CheckSecurity(roles = {"ROLE_CLIENT"})
     @ApiOperation(value = "update comment")
     public ResponseEntity<ReviewDto> updateReview(@RequestHeader("authorization") String authorization,
-                                                  @PathVariable Long id, @RequestBody @NotNull @Valid ReviewDto reviewDto) {
+                                                  @PathVariable Long id, @RequestBody @Valid ReviewDto reviewDto) {
         Long clientId = securityAspect.getUserId(authorization);
         return new ResponseEntity<>(reviewService.update(id, clientId, reviewDto), HttpStatus.OK);
     }

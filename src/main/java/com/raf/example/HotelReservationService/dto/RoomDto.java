@@ -6,6 +6,16 @@ public class RoomDto {
     private String type;
     private Double pricePerDay;
 
+    public RoomDto() {
+    }
+
+    public RoomDto(Long hotelId, Integer roomNumber, String type, Double pricePerDay) {
+        this.hotelId = hotelId;
+        this.roomNumber = roomNumber;
+        this.type = type;
+        this.pricePerDay = pricePerDay;
+    }
+
     public Long getHotelId() {
         return hotelId;
     }

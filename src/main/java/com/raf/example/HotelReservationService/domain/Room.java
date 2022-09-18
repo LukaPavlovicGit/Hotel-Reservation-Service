@@ -4,28 +4,23 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table (indexes = {@Index(columnList = "roomNumber", unique = true)})
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @NotNull
     private Long hotelId;
-
     @NotNull
     private Integer roomNumber;
-
+    @ManyToOne(optional = false)
     @NotNull
-    private String type;
+    private RoomType roomType;
 
-    @NotNull
-    private Double pricePerDay;
-
-    public Room(Long hotelId, Integer roomNumber, String type, Double pricePerDay) {
+    public Room(Long hotelId, Integer roomNumber, RoomType roomType) {
         this.hotelId = hotelId;
         this.roomNumber = roomNumber;
-        this.type = type;
-        this.pricePerDay = pricePerDay;
+        this.roomType = roomType;
     }
 
     public Room() {}
@@ -50,20 +45,11 @@ public class Room {
         this.roomNumber = roomNumber;
     }
 
-    public String getType() {
-        return type;
+    public RoomType getRoomType() {
+        return roomType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setRoomType(RoomType roomType) {
+        this.roomType = roomType;
     }
-
-    public Double getPricePerDay() {
-        return pricePerDay;
-    }
-
-    public void setPricePerDay(Double pricePerDay) {
-        this.pricePerDay = pricePerDay;
-    }
-
 }

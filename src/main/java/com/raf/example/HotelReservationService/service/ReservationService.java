@@ -19,11 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -59,7 +56,7 @@ public class ReservationService {
         ResponseEntity<DiscountDto> discountDtoResponseEntity =  Retry.decorateSupplier(userServiceRetry, () -> userServiceRestTemplate.exchange("/user/" +
                 reservationDto.getClientId() + "/discount", HttpMethod.GET, null, DiscountDto.class)).get();
 
-        Double totalPrice = room.getPricePerDay() *
+        Double totalPrice = room.getRoomType().getPricePerDay() *
                 (Period.between(reservationDto.getStartDate(), reservationDto.getEndDate()).getDays() + 1);
         totalPrice-= totalPrice*(discountDtoResponseEntity.getBody().getDiscount()/100);
 

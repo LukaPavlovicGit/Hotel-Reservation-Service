@@ -23,21 +23,30 @@ public class HotelController {
         this.securityAspect = securityAspect;
     }
 
-    @PostMapping("/addHotel")
+    @PostMapping
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<HotelDto> addHotel(@RequestHeader("authorization") String authorization,
                                                       @RequestBody @Valid HotelDto hotelDto) {
         Long managerId = securityAspect.getUserId(authorization);
-        return new ResponseEntity<>(hotelService.addHotel(managerId,hotelDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(hotelService.save(managerId,hotelDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/updateManager")
-    @ApiOperation(value = "manager update")
+    @PutMapping
+    @ApiOperation(value = "hotel update")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
-    public ResponseEntity<HotelDto> updateManager(@RequestHeader("authorization") String authorization,
+    public ResponseEntity<HotelDto> updateHotel(@RequestHeader("authorization") String authorization,
                                                     @RequestBody HotelDto hotelDto){
         Long managerId = securityAspect.getUserId(authorization);
         return new ResponseEntity<>(hotelService.update(managerId, hotelDto), HttpStatus.OK);
     }
+
+    @DeleteMapping
+    @ApiOperation(value = "hotel removal")
+    @CheckSecurity(roles = {"ROLE_MANAGER"})
+    public ResponseEntity<HotelDto> removeHotel(@RequestHeader("authorization") String authorization){
+        Long managerId = securityAspect.getUserId(authorization);
+        return new ResponseEntity<>(hotelService.remove(managerId), HttpStatus.OK);
+    }
+
 
 }

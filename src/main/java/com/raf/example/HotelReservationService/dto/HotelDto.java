@@ -9,6 +9,15 @@ public class HotelDto {
     private String description;
     private Integer numberOfRooms;
 
+    public HotelDto() {
+    }
+
+    public HotelDto(String city, String name, String description, Integer numberOfRooms) {
+        this.city = city;
+        this.name = name;
+        this.description = description;
+        this.numberOfRooms = numberOfRooms;
+    }
 
     public String getCity() {
         return city;

@@ -23,7 +23,7 @@ public class HotelService {
         this.mapper = mapper;
     }
 
-    public HotelDto addHotel(Long managerId, HotelDto hotelDto){
+    public HotelDto save(Long managerId, HotelDto hotelDto){
         Optional<Hotel> hotelOptional = hotelRepository.findHotelByManagerId(managerId);
         if(!hotelOptional.isPresent()) {
             Hotel hotel = hotelOptional.get();
@@ -50,6 +50,22 @@ public class HotelService {
         hotelRepository.save(hotel);
         return hotelDto;
 
+    }
+
+    public HotelDto remove(Long managerId){
+        Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
+        hotelRepository.deleteById(hotel.getId());
+        return new HotelDto(hotel.getCity(), hotel.getName(), hotel.getDescription(), hotel.getNumberOfRooms());
+    }
+
+    public void incrementNumberOfRooms(Long id, boolean increment){
+        hotelRepository.findById(id).ifPresent(hotel -> {
+            if(increment)
+                hotel.setNumberOfRooms(hotel.getNumberOfRooms() + 1);
+            else
+                hotel.setNumberOfRooms(hotel.getNumberOfRooms() - 1);
+            hotelRepository.save(hotel);
+        });
     }
 
 }
