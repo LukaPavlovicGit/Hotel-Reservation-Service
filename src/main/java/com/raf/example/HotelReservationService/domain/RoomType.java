@@ -8,8 +8,18 @@ public class RoomType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String typeName;
     private Double pricePerDay;
+    private String hotelName;
+
+    public RoomType() {
+    }
+
+    public RoomType(String typeName, Double pricePerDay, String hotelName) {
+        this.typeName = typeName;
+        this.pricePerDay = pricePerDay;
+        this.hotelName = hotelName;
+    }
 
     public Long getId() {
         return id;
@@ -19,20 +29,12 @@ public class RoomType {
         this.id = id;
     }
 
-    public RoomType() {
+    public String getTypeName() {
+        return typeName;
     }
 
-    public RoomType(String name, Double pricePerDay) {
-        this.name = name;
-        this.pricePerDay = pricePerDay;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setTypeName(String name) {
+        this.typeName = name;
     }
 
     public Double getPricePerDay() {

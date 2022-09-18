@@ -13,7 +13,7 @@ public class Room {
     private Long hotelId;
     @NotNull
     private Integer roomNumber;
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @NotNull
     private RoomType roomType;
 
