@@ -19,11 +19,11 @@ public class RoomTypeService {
 
     public RoomTypeDto save(Long managerId ,RoomTypeDto roomTypeDto){
         Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
-        Optional<RoomType> roomTypeOptional = roomTypeRepository.findByHotelNameAndTypeName(hotel.getName(), roomTypeDto.getTypeName());
+        Optional<RoomType> roomTypeOptional = roomTypeRepository.findByHotelIdAndTypeName(hotel.getId(), roomTypeDto.getTypeName());
         if(roomTypeOptional.isPresent())
             throw new OperationNotAllowed(String.format("Room type '%s' for a hotel '%s' already exist.", roomTypeDto.getTypeName(), hotel.getName()));
 
-        RoomType roomType = new RoomType(roomTypeDto.getTypeName(), roomTypeDto.getPricePerDay(), hotel.getName());
+        RoomType roomType = new RoomType(roomTypeDto.getTypeName(), roomTypeDto.getPricePerDay(), hotel.getId());
         roomTypeRepository.save(roomType);
 
         return new RoomTypeDto(roomType.getTypeName(), roomType.getPricePerDay());
@@ -39,8 +39,16 @@ public class RoomTypeService {
         return null;
     }
 
-    private RoomTypeDto update(Long id){
-
-        return null;
+    public RoomTypeDto update(Long managerId, RoomTypeDto roomTypeDto){
+        Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
+        Optional<RoomType> roomTypeOptional = roomTypeRepository.findByHotelIdAndTypeName(hotel.getId(), roomTypeDto.getTypeName());
+        if(roomTypeOptional.isPresent()){
+            RoomType roomType = roomTypeOptional.get();
+            roomType.setPricePerDay(roomTypeDto.getPricePerDay());
+            roomTypeRepository.save(roomType);
+            return roomTypeDto;
+        }
+        else
+            throw new OperationNotAllowed(String.format("Room type '%s' for a hotel '%s' does not exist.", roomTypeDto.getTypeName(), hotel.getName()));
     }
 }

@@ -3,22 +3,26 @@ package com.raf.example.HotelReservationService.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(indexes = {@Index(columnList = "name", unique = true)})
 public class RoomType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String typeName;
     private Double pricePerDay;
-    private String hotelName;
+    private Long hotelId;
 
-    public RoomType() {
-    }
+    /*
+    @ManyToOne
+    @JoinColumn(name = "hotel_id")
+    private Hotel hotel;*/
 
-    public RoomType(String typeName, Double pricePerDay, String hotelName) {
+
+    public RoomType() { }
+
+    public RoomType(String typeName, Double pricePerDay, Long hotelId) {
         this.typeName = typeName;
         this.pricePerDay = pricePerDay;
-        this.hotelName = hotelName;
+        this.hotelId = hotelId;
     }
 
     public Long getId() {
@@ -43,5 +47,13 @@ public class RoomType {
 
     public void setPricePerDay(Double pricePerDay) {
         this.pricePerDay = pricePerDay;
+    }
+
+    public Long getHotelId() {
+        return hotelId;
+    }
+
+    public void setHotelId(Long hotelId) {
+        this.hotelId = hotelId;
     }
 }

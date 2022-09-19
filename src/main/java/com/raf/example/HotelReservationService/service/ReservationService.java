@@ -34,13 +34,14 @@ public class ReservationService {
     private Retry userServiceRetry;
 
     public ReservationService(RoomRepository roomRepository, HotelRepository hotelRepository, ReservationRepository reservationRepository,
-                              JmsTemplate jmsTemplate, MessageHelper messageHelper, RestTemplate userServiceRestTemplate) {
+                              JmsTemplate jmsTemplate, MessageHelper messageHelper, RestTemplate userServiceRestTemplate, Retry userServiceRetry) {
         this.roomRepository = roomRepository;
         this.hotelRepository = hotelRepository;
         this.reservationRepository = reservationRepository;
         this.jmsTemplate = jmsTemplate;
         this.messageHelper = messageHelper;
         this.userServiceRestTemplate = userServiceRestTemplate;
+        this.userServiceRetry = userServiceRetry;
     }
 
     public ReservationDto addReservation(ReservationDto reservationDto){

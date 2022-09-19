@@ -7,6 +7,7 @@ import com.raf.example.HotelReservationService.domain.RoomType;
 import com.raf.example.HotelReservationService.dto.AvailableRoomsFilterDto;
 import com.raf.example.HotelReservationService.dto.RoomDto;
 import com.raf.example.HotelReservationService.exception.NotFoundException;
+import com.raf.example.HotelReservationService.exception.OperationNotAllowed;
 import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.repository.RoomRepository;
@@ -45,7 +46,12 @@ public class RoomService {
 
         Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
         Long hotelId = hotel.getId();
-        RoomType roomType = roomTypeRepository.findByHotelNameAndTypeName(hotel.getName(),roomTypeName).orElseThrow(() -> new NotFoundException(String.format("Room type with a name %s not found.", roomTypeName)));
+        RoomType roomType = roomTypeRepository.findByHotelIdAndTypeName(hotel.getId(),roomTypeName)
+                .orElseThrow(() -> new NotFoundException(String.format("Room type with a name %s not found.", roomTypeName)));
+
+        Optional<Room> roomOptional = roomRepository.findByRoomNumber(roomNumber);
+        if(roomOptional.isPresent())
+            throw new OperationNotAllowed(String.format("Room with a room number %s already exist. Choose different room number.", roomNumber));
 
         Room room = new Room(hotelId, roomNumber, roomType);
         roomRepository.save(room);
@@ -107,7 +113,7 @@ public class RoomService {
             roomDto.setRoomNumber(room.getRoomNumber());
             roomDto.setType(room.getRoomType().getTypeName());
             roomDto.setPricePerDay(room.getRoomType().getPricePerDay());
-            roomDto.setHotelId(roomDto.getHotelId());
+            roomDto.setHotelId(room.getHotelId());
 
             roomsDto.add(roomDto);
         }

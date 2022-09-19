@@ -7,7 +7,8 @@ import javax.validation.constraints.NotNull;
 @Table (indexes = {@Index(columnList = "name", unique = true)})
 public class Hotel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -19,15 +20,28 @@ public class Hotel {
     @NotNull
     private String name;
 
+    @NotNull
     private String description;
 
     @NotNull
-    private Integer numberOfRooms;
+    private Integer numberOfRooms = 0;
+
 
     public Hotel() {}
 
+    public Hotel(Long managerId, String city, String name, String description) {
+        this.managerId = managerId;
+        this.city = city;
+        this.name = name;
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getManagerId() {

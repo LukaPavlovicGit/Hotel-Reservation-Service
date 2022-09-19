@@ -7,7 +7,6 @@ public class ReservationDto {
 
     private Long roomId;
     private Long clientId;
-
     private String clientEmail;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
