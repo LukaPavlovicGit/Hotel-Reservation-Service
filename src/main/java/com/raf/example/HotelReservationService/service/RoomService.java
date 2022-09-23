@@ -8,6 +8,7 @@ import com.raf.example.HotelReservationService.dto.AvailableRoomsFilterDto;
 import com.raf.example.HotelReservationService.dto.RoomDto;
 import com.raf.example.HotelReservationService.exception.NotFoundException;
 import com.raf.example.HotelReservationService.exception.OperationNotAllowed;
+import com.raf.example.HotelReservationService.mapper.Mapper;
 import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.repository.RoomRepository;
@@ -32,14 +33,16 @@ public class RoomService {
     private HotelRepository hotelRepository;
     private ReservationRepository reservationRepository;
     private HotelService hotelService;
+    private Mapper mapper;
 
     public RoomService(RoomRepository roomRepository, RoomTypeRepository roomTypeRepository, HotelRepository hotelRepository,
-                       ReservationRepository reservationRepository, HotelService hotelService) {
+                       ReservationRepository reservationRepository, HotelService hotelService, Mapper mapper) {
         this.roomRepository = roomRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.hotelRepository = hotelRepository;
         this.reservationRepository = reservationRepository;
         this.hotelService = hotelService;
+        this.mapper = mapper;
     }
 
     public RoomDto save(Long managerId, String roomTypeName, Integer roomNumber){
@@ -55,9 +58,9 @@ public class RoomService {
 
         Room room = new Room(hotelId, roomNumber, roomType);
         roomRepository.save(room);
-        hotelService.incrementNumberOfRooms(hotelId,true);
+        hotelService.incrementNumberOfRooms(hotelId);
 
-        return new RoomDto(hotelId, roomNumber, roomType.getTypeName(), roomType.getPricePerDay());
+        return mapper.roomToDto(room);
     }
 
     public RoomDto remove(Long managerId, Long roomId){
@@ -65,8 +68,8 @@ public class RoomService {
         Long hotelId = hotel.getId();
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new NotFoundException(String.format("Room with id %s not found", roomId)));
         roomRepository.deleteById(roomId);
-        hotelService.incrementNumberOfRooms(hotelId, false);
-        return new RoomDto(room.getHotelId(), room.getRoomNumber(), room.getRoomType().getTypeName(), room.getRoomType().getPricePerDay());
+        hotelService.decrementNumberOfRooms(hotelId);
+        return mapper.roomToDto(room);
     }
 
     public List<RoomDto> listAvailableRooms(AvailableRoomsFilterDto availableRoomsFilterDto){
@@ -109,16 +112,9 @@ public class RoomService {
 
         List<RoomDto> roomsDto = new ArrayList<>();
         for(Room room : rooms){
-            RoomDto roomDto = new RoomDto();
-            roomDto.setRoomNumber(room.getRoomNumber());
-            roomDto.setType(room.getRoomType().getTypeName());
-            roomDto.setPricePerDay(room.getRoomType().getPricePerDay());
-            roomDto.setHotelId(room.getHotelId());
-
-            roomsDto.add(roomDto);
+            roomsDto.add(mapper.roomToDto(room));
         }
 
         return roomsDto;
     }
-
 }

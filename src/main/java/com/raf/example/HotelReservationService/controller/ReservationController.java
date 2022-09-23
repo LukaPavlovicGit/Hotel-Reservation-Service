@@ -39,7 +39,7 @@ public class ReservationController {
 
     @DeleteMapping(path = "/{id}")
     @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
-    public ResponseEntity<Reservation> removeReservation(@RequestHeader("Authorization") String authorization, @PathVariable Long reservationId) {
+    public ResponseEntity<ReservationDto> removeReservation(@RequestHeader("Authorization") String authorization, @PathVariable Long reservationId) {
 
         Long clientId = securityAspect.getUserId(authorization);
         String userRole = securityAspect.getUserRole(authorization);

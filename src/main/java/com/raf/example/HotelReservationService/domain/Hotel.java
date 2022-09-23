@@ -10,7 +10,6 @@ public class Hotel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-
     @NotNull
     private Long managerId;
 
@@ -28,6 +27,15 @@ public class Hotel {
 
 
     public Hotel() {}
+
+    public Hotel(Long id, Long managerId, String city, String name, String description, Integer numberOfRooms) {
+        this.id = id;
+        this.managerId = managerId;
+        this.city = city;
+        this.name = name;
+        this.description = description;
+        this.numberOfRooms = numberOfRooms;
+    }
 
     public Hotel(Long managerId, String city, String name, String description) {
         this.managerId = managerId;

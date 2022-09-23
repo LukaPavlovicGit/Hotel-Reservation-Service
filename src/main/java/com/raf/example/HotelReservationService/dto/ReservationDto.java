@@ -12,6 +12,9 @@ public class ReservationDto {
     private LocalDate startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
+    private Double price;
+
+    private Long hotelId;
 
     public ReservationDto(){
 
@@ -23,6 +26,15 @@ public class ReservationDto {
         this.clientEmail = clientEmail;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public ReservationDto(Long roomId, Long clientId, String clientEmail, LocalDate startDate, LocalDate endDate, Long hotelId) {
+        this.roomId = roomId;
+        this.clientId = clientId;
+        this.clientEmail = clientEmail;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.hotelId = hotelId;
     }
 
     public Long getRoomId() {
@@ -63,5 +75,21 @@ public class ReservationDto {
 
     public void setClientEmail(String clientEmail) {
         this.clientEmail = clientEmail;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Long getHotelId() {
+        return hotelId;
+    }
+
+    public void setHotelId(Long hotelId) {
+        this.hotelId = hotelId;
     }
 }

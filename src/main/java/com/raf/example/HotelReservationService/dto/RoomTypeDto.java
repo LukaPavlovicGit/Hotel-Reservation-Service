@@ -3,8 +3,15 @@ package com.raf.example.HotelReservationService.dto;
 public class RoomTypeDto {
     private String typeName;
     private Double pricePerDay;
+    private Long hotelId;
 
     public RoomTypeDto() {
+    }
+
+    public RoomTypeDto(String typeName, Double pricePerDay, Long hotelId) {
+        this.typeName = typeName;
+        this.pricePerDay = pricePerDay;
+        this.hotelId = hotelId;
     }
 
     public RoomTypeDto(String typeName, Double pricePerDay) {
@@ -26,5 +33,13 @@ public class RoomTypeDto {
 
     public void setPricePerDay(Double pricePerDay) {
         this.pricePerDay = pricePerDay;
+    }
+
+    public Long getHotelId() {
+        return hotelId;
+    }
+
+    public void setHotelId(Long hotelId) {
+        this.hotelId = hotelId;
     }
 }

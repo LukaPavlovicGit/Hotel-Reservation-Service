@@ -31,7 +31,8 @@ public class ReviewController {
     public ResponseEntity<ReviewDto> addReview(@RequestHeader("authorization") String authorization,
                                                @RequestBody @RequestParam ReviewDto reviewDto) {
         Long clientId = securityAspect.getUserId(authorization);
-        return new ResponseEntity<>(reviewService.save(clientId, reviewDto), HttpStatus.CREATED);
+        reviewDto.setClientId(clientId);
+        return new ResponseEntity<>(reviewService.save(reviewDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/all")
@@ -57,6 +58,7 @@ public class ReviewController {
     public ResponseEntity<ReviewDto> updateReview(@RequestHeader("authorization") String authorization,
                                                   @PathVariable Long id, @RequestBody @Valid ReviewDto reviewDto) {
         Long clientId = securityAspect.getUserId(authorization);
-        return new ResponseEntity<>(reviewService.update(id, clientId, reviewDto), HttpStatus.OK);
+        reviewDto.setClientId(clientId);
+        return new ResponseEntity<>(reviewService.update(id, reviewDto), HttpStatus.OK);
     }
 }

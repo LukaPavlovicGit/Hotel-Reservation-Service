@@ -28,6 +28,14 @@ public class Review {
 
     public Review() {}
 
+    public Review(Long id, Long userId, Long reservationId, Integer rating, String comment) {
+        this.id = id;
+        this.userId = userId;
+        this.reservationId = reservationId;
+        this.rating = rating;
+        this.comment = comment;
+    }
+
     public Review(Long userId, Long reservationId, Integer rating, String comment) {
         this.userId = userId;
         this.reservationId = reservationId;
@@ -74,4 +82,6 @@ public class Review {
     public void setId(Long id) {
         this.id = id;
     }
+
+
 }

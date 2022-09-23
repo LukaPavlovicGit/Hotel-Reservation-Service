@@ -8,6 +8,7 @@ import com.raf.example.HotelReservationService.domain.Room;
 import com.raf.example.HotelReservationService.dto.*;
 import com.raf.example.HotelReservationService.exception.NotFoundException;
 import com.raf.example.HotelReservationService.exception.OperationNotAllowed;
+import com.raf.example.HotelReservationService.mapper.Mapper;
 import com.raf.example.HotelReservationService.messageHelper.MessageHelper;
 import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.awt.image.ImageProducer;
 import java.time.Period;
 import java.util.*;
 
@@ -33,9 +35,10 @@ public class ReservationService {
     private MessageHelper messageHelper;
     private RestTemplate userServiceRestTemplate;
     private Retry userServiceRetry;
+    private Mapper mapper;
 
-    public ReservationService(RoomRepository roomRepository, HotelRepository hotelRepository, ReservationRepository reservationRepository,
-                              JmsTemplate jmsTemplate, MessageHelper messageHelper, RestTemplate userServiceRestTemplate, Retry userServiceRetry) {
+    public ReservationService(RoomRepository roomRepository, HotelRepository hotelRepository, ReservationRepository reservationRepository, JmsTemplate jmsTemplate,
+                              MessageHelper messageHelper, RestTemplate userServiceRestTemplate, Retry userServiceRetry, Mapper mapper) {
         this.roomRepository = roomRepository;
         this.hotelRepository = hotelRepository;
         this.reservationRepository = reservationRepository;
@@ -43,6 +46,7 @@ public class ReservationService {
         this.messageHelper = messageHelper;
         this.userServiceRestTemplate = userServiceRestTemplate;
         this.userServiceRetry = userServiceRetry;
+        this.mapper = mapper;
     }
 
     public ReservationDto save(ReservationDto reservationDto){
@@ -62,10 +66,11 @@ public class ReservationService {
                 (Period.between(reservationDto.getStartDate(), reservationDto.getEndDate()).getDays() + 1);
         totalPrice-= totalPrice*(discountDtoResponseEntity.getBody().getDiscount()/100);
 
-        Reservation reservation = new Reservation(reservationDto.getClientId(), reservationDto.getClientEmail(), room.getHotelId(), room.getId(),
-                reservationDto.getStartDate(), reservationDto.getEndDate(), totalPrice, true);
-
+        reservationDto.setPrice(totalPrice);
+        reservationDto.setHotelId(room.getHotelId());
+        Reservation reservation = mapper.dtoToReservation(reservationDto);
         reservationRepository.save(reservation);
+
         userServiceRestTemplate.exchange("http://localhost:8080/api/users/incrementReservation/"+reservationDto.getClientId(),
                 HttpMethod.POST, null, ResponseEntity.class);
 
@@ -73,7 +78,7 @@ public class ReservationService {
         return reservationDto;
     }
 
-    public Reservation removeReservation(Long reservationId, Long userId, String role){
+    public ReservationDto removeReservation(Long reservationId, Long userId, String role){
 
         Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
         if(reservationOptional.isPresent()){
@@ -88,9 +93,8 @@ public class ReservationService {
                     HttpMethod.POST, null, ResponseEntity.class);
 
             sendEmail(reservation, "reservation_cancellation");
-            return reservation;
+            return mapper.reservationToDto(reservation);
         }
-
         throw new NotFoundException(String.format("Reservation with id %s not found.", reservationId));
     }
 

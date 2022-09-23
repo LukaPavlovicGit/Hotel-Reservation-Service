@@ -28,7 +28,8 @@ public class HotelController {
     public ResponseEntity<HotelDto> addHotel(@RequestHeader("authorization") String authorization,
                                                       @RequestBody @Valid HotelDto hotelDto) {
         Long managerId = securityAspect.getUserId(authorization);
-        return new ResponseEntity<>(hotelService.save(managerId,hotelDto), HttpStatus.CREATED);
+        hotelDto.setManagerId(managerId);
+        return new ResponseEntity<>(hotelService.save(hotelDto), HttpStatus.CREATED);
     }
 
     @PutMapping
@@ -37,7 +38,8 @@ public class HotelController {
     public ResponseEntity<HotelDto> updateHotel(@RequestHeader("authorization") String authorization,
                                                     @RequestBody HotelDto hotelDto){
         Long managerId = securityAspect.getUserId(authorization);
-        return new ResponseEntity<>(hotelService.update(managerId, hotelDto), HttpStatus.OK);
+        hotelDto.setManagerId(managerId);
+        return new ResponseEntity<>(hotelService.update(hotelDto), HttpStatus.OK);
     }
 
     @DeleteMapping
