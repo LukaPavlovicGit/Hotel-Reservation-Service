@@ -2,17 +2,14 @@ package com.raf.example.HotelReservationService.controller;
 
 import com.raf.example.HotelReservationService.domain.Reservation;
 import com.raf.example.HotelReservationService.dto.ReservationDto;
-import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.secutiry.CheckSecurity;
 import com.raf.example.HotelReservationService.secutiry.SecurityAspect;
 import com.raf.example.HotelReservationService.service.ReservationService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 
 
@@ -37,7 +34,7 @@ public class ReservationController {
                                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate endDate) {
         Long clientId = securityAspect.getUserId(authorization);
         String clientEmail = securityAspect.getUserEmail(authorization);
-        return new ResponseEntity<>(reservationService.addReservation(new ReservationDto(roomId,clientId,clientEmail,startDate,endDate)), HttpStatus.CREATED);
+        return new ResponseEntity<>(reservationService.save(new ReservationDto(roomId,clientId,clientEmail,startDate,endDate)), HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/{id}")

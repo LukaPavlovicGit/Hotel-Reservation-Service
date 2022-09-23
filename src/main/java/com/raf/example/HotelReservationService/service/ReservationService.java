@@ -1,5 +1,6 @@
 package com.raf.example.HotelReservationService.service;
 
+import ch.qos.logback.core.net.server.Client;
 import com.raf.example.HotelReservationService.clientUserService.dto.DiscountDto;
 import com.raf.example.HotelReservationService.domain.Hotel;
 import com.raf.example.HotelReservationService.domain.Reservation;
@@ -44,7 +45,7 @@ public class ReservationService {
         this.userServiceRetry = userServiceRetry;
     }
 
-    public ReservationDto addReservation(ReservationDto reservationDto){
+    public ReservationDto save(ReservationDto reservationDto){
 
         List<Reservation> reservations = reservationRepository.findAllByRoomId(reservationDto.getRoomId());
         for(Reservation r : reservations){
@@ -61,11 +62,14 @@ public class ReservationService {
                 (Period.between(reservationDto.getStartDate(), reservationDto.getEndDate()).getDays() + 1);
         totalPrice-= totalPrice*(discountDtoResponseEntity.getBody().getDiscount()/100);
 
-        reservationRepository.save(new Reservation(reservationDto.getClientId(), reservationDto.getClientEmail(), room.getHotelId(), room.getId(),
-                reservationDto.getStartDate(), reservationDto.getEndDate(), totalPrice, true));
+        Reservation reservation = new Reservation(reservationDto.getClientId(), reservationDto.getClientEmail(), room.getHotelId(), room.getId(),
+                reservationDto.getStartDate(), reservationDto.getEndDate(), totalPrice, true);
 
-        jmsTemplate. convertAndSend("increment_reservation_queue",
-                messageHelper.createTextMessage(new IncrementReservationDto(reservationDto.getClientId(), true)));
+        reservationRepository.save(reservation);
+        userServiceRestTemplate.exchange("http://localhost:8080/api/users/incrementReservation/"+reservationDto.getClientId(),
+                HttpMethod.POST, null, ResponseEntity.class);
+
+        sendEmail(reservation, "reservation_successful");
         return reservationDto;
     }
 
@@ -79,13 +83,24 @@ public class ReservationService {
                 if (reservation.getUserId() != userId)
                     throw new OperationNotAllowed(String.format("Client not allowed to delete reservation with id %s.", reservationId));
             }
-
             reservationRepository.deleteById(reservation.getId());
-            jmsTemplate. convertAndSend("increment_reservation_queue",
-                    messageHelper.createTextMessage(new IncrementReservationDto(reservation.getUserId(), false)));
+            userServiceRestTemplate.exchange("http://localhost:8080/api/users/decrementReservation/"+reservation.getUserId(),
+                    HttpMethod.POST, null, ResponseEntity.class);
+
+            sendEmail(reservation, "reservation_cancellation");
             return reservation;
         }
 
         throw new NotFoundException(String.format("Reservation with id %s not found.", reservationId));
+    }
+
+    public void sendEmail(Reservation reservation, String emailType) {
+        Hotel hotel = hotelRepository.findById(reservation.getHotelId())
+                .orElseThrow(() -> new NotFoundException(String.format("Hotel with id %s not found.", reservation.getHotelId())));
+        ResponseEntity<UserDto> userDto = userServiceRestTemplate.exchange("http://localhost:8080/api/users/get/" +
+                reservation.getUserId(), HttpMethod.GET, null, UserDto.class);
+
+        MessageDto messageDto = new MessageDto(userDto.getBody().getFirstName(), userDto.getBody().getLastName(), userDto.getBody().getEmail(), hotel.getName());
+        jmsTemplate.convertAndSend("send_mail_queue", messageHelper.createTextMessage(messageDto));
     }
 }

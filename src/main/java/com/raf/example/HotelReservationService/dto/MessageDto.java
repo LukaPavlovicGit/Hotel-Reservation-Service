@@ -8,6 +8,13 @@ public class MessageDto {
     private String email;
     private String rezStart;
 
+    public MessageDto(String name, String lastname, String email, String hotelName){
+        this.name = name;
+        this.lastname = lastname;
+        this.email = email;
+        this.hotelName = hotelName;
+    }
+
     public MessageDto(String type, String name, String lastname, String email, String hotelName, String rezStart) {
         this.type = type;
         this.name = name;
