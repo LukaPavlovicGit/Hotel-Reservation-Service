@@ -8,9 +8,9 @@ import javax.validation.constraints.NotNull;
 public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+
     private Long id;
-    @NotNull
+
     private Long managerId;
 
     @NotNull
@@ -42,6 +42,12 @@ public class Hotel {
         this.city = city;
         this.name = name;
         this.description = description;
+    }
+
+    public Hotel(String city, String name, String description){
+        this.managerId = managerId;
+        this.city = city;
+        this.name = name;
     }
 
     public Long getId() {

@@ -32,13 +32,13 @@ public class TestDataRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Hotel h1 = new Hotel(4L,"","hotel1","desc");
-        Hotel h2 = new Hotel(5L,"","hotel2","desc");
-        Hotel h3 = new Hotel(6L,"","hotel3","desc");
-        Hotel h4 = new Hotel(7L,"","hotel4","desc");
-        Hotel h5 = new Hotel(8L,"","hotel5","desc");
-        Hotel h6 = new Hotel(9L,"","hotel6","desc");
-        Hotel h7 = new Hotel(10L,"","hotel7","desc");
+        Hotel h1 = new Hotel("","hotel1","desc");
+        Hotel h2 = new Hotel("","hotel2","desc");
+        Hotel h3 = new Hotel("","hotel3","desc");
+        Hotel h4 = new Hotel("","hotel4","desc");
+        Hotel h5 = new Hotel("","hotel5","desc");
+        Hotel h6 = new Hotel("","hotel6","desc");
+        Hotel h7 = new Hotel("","hotel7","desc");
 
         hotelRepository.save(h1);
         hotelRepository.save(h2);
