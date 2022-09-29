@@ -23,7 +23,7 @@ public class HotelController {
         this.securityAspect = securityAspect;
     }
 
-    @PostMapping("/add")
+    @PostMapping
     @ApiOperation(value = "add hotel")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<HotelDto> addHotel(@RequestHeader("authorization") String authorization,
@@ -33,7 +33,7 @@ public class HotelController {
         return new ResponseEntity<>(hotelService.save(hotelDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/update")
+    @PutMapping
     @ApiOperation(value = "hotel update")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<HotelDto> updateHotel(@RequestHeader("authorization") String authorization,
@@ -43,7 +43,7 @@ public class HotelController {
         return new ResponseEntity<>(hotelService.update(hotelDto), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     @ApiOperation(value = "hotel removal")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<HotelDto> removeHotel(@RequestHeader("authorization") String authorization){
