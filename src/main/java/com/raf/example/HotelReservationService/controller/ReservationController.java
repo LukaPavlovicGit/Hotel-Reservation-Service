@@ -29,9 +29,9 @@ public class ReservationController {
     @PostMapping
     @CheckSecurity(roles = {"ROLE_CLIENT"})
     public ResponseEntity<ReservationDto> addNewReservation(@RequestHeader("Authorization") String authorization,
-                                                            @RequestParam Long roomId,
-                                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate startDate,
-                                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate endDate) {
+                                                            @RequestParam(required = false, value = "roomId") Long roomId,
+                                                            @RequestParam(required = false, value = "startDate") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate startDate,
+                                                            @RequestParam(required = false, value = "endDate") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate endDate) {
         Long clientId = securityAspect.getUserId(authorization);
         String clientEmail = securityAspect.getUserEmail(authorization);
         return new ResponseEntity<>(reservationService.save(new ReservationDto(roomId,clientId,clientEmail,startDate,endDate)), HttpStatus.CREATED);

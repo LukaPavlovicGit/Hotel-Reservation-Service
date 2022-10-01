@@ -29,7 +29,7 @@ public class ReviewController {
     @CheckSecurity(roles = {"ROLE_CLIENT"})
     @ApiOperation(value = "make a comment")
     public ResponseEntity<ReviewDto> addReview(@RequestHeader("authorization") String authorization,
-                                               @RequestBody @RequestParam ReviewDto reviewDto) {
+                                               @RequestBody ReviewDto reviewDto) {
         Long clientId = securityAspect.getUserId(authorization);
         reviewDto.setClientId(clientId);
         return new ResponseEntity<>(reviewService.save(reviewDto), HttpStatus.CREATED);
@@ -46,7 +46,7 @@ public class ReviewController {
     @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
     @ApiOperation(value = "remove comment")
     public ResponseEntity<ReviewDto> removeReview(@RequestHeader("authorization") String authorization,
-                                                  @RequestParam Long reviewId) {
+                                                  @RequestParam(required = false, value = "reviewId") Long reviewId) {
         Long clientId = securityAspect.getUserId(authorization);
         String role = securityAspect.getUserRole(authorization);
         return new ResponseEntity<>(reviewService.remove(reviewId, role, clientId), HttpStatus.OK);
