@@ -19,6 +19,11 @@ public class RoomType {
 
     public RoomType() { }
 
+    public RoomType(String typeName, Double pricePerDay) {
+        this.typeName = typeName;
+        this.pricePerDay = pricePerDay;
+    }
+
     public RoomType(String typeName, Double pricePerDay, Long hotelId) {
         this.typeName = typeName;
         this.pricePerDay = pricePerDay;

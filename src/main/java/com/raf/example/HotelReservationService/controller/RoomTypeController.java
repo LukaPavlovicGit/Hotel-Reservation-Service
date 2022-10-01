@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/roomTypes")
 public class RoomTypeController {
@@ -23,10 +25,19 @@ public class RoomTypeController {
     @PostMapping
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<RoomTypeDto> addRoomType(@RequestHeader("Authorization") String authorization,
-                                               @RequestParam RoomTypeDto roomTypeDto){
+                                                   @RequestParam RoomTypeDto roomTypeDto){
         Long managerId = securityAspect.getUserId(authorization);
         return new ResponseEntity<>(roomTypeService.save(managerId, roomTypeDto), HttpStatus.CREATED);
     }
+
+    @PostMapping
+    @CheckSecurity(roles = {"ROLE_MANAGER"})
+    public ResponseEntity<List<RoomTypeDto>> addAllRoomTypes(@RequestHeader("Authorization") String authorization,
+                                                             @RequestParam List<RoomTypeDto> roomTypeDtos){
+        Long managerId = securityAspect.getUserId(authorization);
+        return new ResponseEntity<>(roomTypeService.saveAll(managerId, roomTypeDtos), HttpStatus.CREATED);
+    }
+
     @PutMapping
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<RoomTypeDto> updateRoomType(@RequestHeader("Authorization") String authorization,

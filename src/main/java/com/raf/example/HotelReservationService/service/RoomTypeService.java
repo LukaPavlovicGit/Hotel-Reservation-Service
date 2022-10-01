@@ -2,6 +2,7 @@ package com.raf.example.HotelReservationService.service;
 
 import com.raf.example.HotelReservationService.domain.Hotel;
 import com.raf.example.HotelReservationService.domain.RoomType;
+import com.raf.example.HotelReservationService.dto.RoomDto;
 import com.raf.example.HotelReservationService.dto.RoomTypeDto;
 import com.raf.example.HotelReservationService.exception.OperationNotAllowed;
 import com.raf.example.HotelReservationService.mapper.Mapper;
@@ -10,6 +11,7 @@ import com.raf.example.HotelReservationService.repository.RoomTypeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,6 +37,12 @@ public class RoomTypeService {
         roomTypeDto.setHotelId(hotel.getId());
         roomTypeRepository.save(mapper.dtoToRoomType(roomTypeDto));
         return roomTypeDto;
+    }
+
+    public List<RoomTypeDto> saveAll(Long managerId, List<RoomTypeDto> roomTypesDto){
+        Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
+
+        return roomTypesDto;
     }
 
     public RoomTypeDto remove(Long id){
