@@ -21,7 +21,8 @@ public class ReservationController {
 
     private ReservationService reservationService;
 
-    public ReservationController(SecurityAspect securityAspect, ReservationService reservationService) {
+    public ReservationController(SecurityAspect securityAspect,
+                                 ReservationService reservationService) {
         this.securityAspect = securityAspect;
         this.reservationService = reservationService;
     }
@@ -39,7 +40,8 @@ public class ReservationController {
 
     @DeleteMapping(path = "/{id}")
     @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
-    public ResponseEntity<ReservationDto> removeReservation(@RequestHeader("Authorization") String authorization, @PathVariable Long reservationId) {
+    public ResponseEntity<ReservationDto> removeReservation(@RequestHeader("Authorization") String authorization,
+                                                            @PathVariable Long reservationId) {
 
         Long clientId = securityAspect.getUserId(authorization);
         String userRole = securityAspect.getUserRole(authorization);

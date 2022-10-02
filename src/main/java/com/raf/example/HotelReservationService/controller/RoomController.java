@@ -42,7 +42,9 @@ public class RoomController {
     }
 
     @GetMapping
-    public List<RoomDto> getAvailableRooms(@RequestBody AvailableRoomsFilterDto availableRoomsFilterDto){
+    @CheckSecurity(roles = {"ROLE_CLIENT"})
+    public List<RoomDto> getAvailableRooms(@RequestHeader("Authorization") String authorization,
+                                           @RequestBody AvailableRoomsFilterDto availableRoomsFilterDto){
         return roomService.listAvailableRooms(availableRoomsFilterDto);
     }
 

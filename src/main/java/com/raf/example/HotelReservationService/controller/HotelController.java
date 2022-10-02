@@ -31,7 +31,7 @@ public class HotelController {
     @ApiOperation(value = "add hotel")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<HotelDto> addHotel(@RequestHeader("authorization") String authorization,
-                                                      @RequestBody @Valid HotelDto hotelDto) {
+                                             @RequestBody @Valid HotelDto hotelDto) {
         Long managerId = securityAspect.getUserId(authorization);
         hotelDto.setManagerId(managerId);
         return new ResponseEntity<>(hotelService.save(hotelDto), HttpStatus.CREATED);
@@ -41,7 +41,7 @@ public class HotelController {
     @ApiOperation(value = "hotel update")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<HotelDto> updateHotel(@RequestHeader("authorization") String authorization,
-                                                    @RequestBody HotelDto hotelDto){
+                                                @RequestBody HotelDto hotelDto){
         Long managerId = securityAspect.getUserId(authorization);
         hotelDto.setManagerId(managerId);
         return new ResponseEntity<>(hotelService.update(hotelDto), HttpStatus.OK);
@@ -56,7 +56,8 @@ public class HotelController {
     }
 
     @GetMapping
-    public ResponseEntity<List<HotelDto>> getTopRatedHotels() {
+    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER", "ROLE_CLIENT"})
+    public ResponseEntity<List<HotelDto>> getTopRatedHotels(@RequestHeader("authorization") String authorization) {
         return new ResponseEntity<>(reviewService.getTopRatedHotels(), HttpStatus.OK);
     }
 

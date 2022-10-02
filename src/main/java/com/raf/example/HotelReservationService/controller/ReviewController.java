@@ -26,8 +26,8 @@ public class ReviewController {
     }
 
     @PostMapping("/comment")
-    @CheckSecurity(roles = {"ROLE_CLIENT"})
     @ApiOperation(value = "make a comment")
+    @CheckSecurity(roles = {"ROLE_CLIENT"})
     public ResponseEntity<ReviewDto> addReview(@RequestHeader("authorization") String authorization,
                                                @RequestBody ReviewDto reviewDto) {
         Long clientId = securityAspect.getUserId(authorization);
@@ -37,14 +37,16 @@ public class ReviewController {
 
     @GetMapping("/all")
     @ApiOperation("list reviews")
-    public ResponseEntity<List<ReviewDto>> getAllReviews(@RequestParam(required = false, value = "hotelName") String hotelName,
+    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER", "ROLE_CLIENT"})
+    public ResponseEntity<List<ReviewDto>> getAllReviews(@RequestHeader("authorization") String authorization,
+                                                         @RequestParam(required = false, value = "hotelName") String hotelName,
                                                          @RequestParam(required = false, value = "city") String city){
         return new ResponseEntity<>(reviewService.getReviews(hotelName,city), HttpStatus.OK);
     }
 
     @DeleteMapping
-    @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
     @ApiOperation(value = "remove comment")
+    @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER"})
     public ResponseEntity<ReviewDto> removeReview(@RequestHeader("authorization") String authorization,
                                                   @RequestParam(required = false, value = "reviewId") Long reviewId) {
         Long clientId = securityAspect.getUserId(authorization);
@@ -53,10 +55,11 @@ public class ReviewController {
     }
 
     @PutMapping(path = "/{id}")
-    @CheckSecurity(roles = {"ROLE_CLIENT"})
     @ApiOperation(value = "update comment")
+    @CheckSecurity(roles = {"ROLE_CLIENT"})
     public ResponseEntity<ReviewDto> updateReview(@RequestHeader("authorization") String authorization,
-                                                  @PathVariable Long id, @RequestBody @Valid ReviewDto reviewDto) {
+                                                  @PathVariable Long id,
+                                                  @RequestBody @Valid ReviewDto reviewDto) {
         Long clientId = securityAspect.getUserId(authorization);
         reviewDto.setClientId(clientId);
         return new ResponseEntity<>(reviewService.update(id, reviewDto), HttpStatus.OK);
