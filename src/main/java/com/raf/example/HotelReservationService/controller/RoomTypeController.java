@@ -25,15 +25,15 @@ public class RoomTypeController {
     @PostMapping
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<RoomTypeDto> addRoomType(@RequestHeader("Authorization") String authorization,
-                                                   @RequestParam RoomTypeDto roomTypeDto){
+                                                   @RequestBody RoomTypeDto roomTypeDto){
         Long managerId = securityAspect.getUserId(authorization);
         return new ResponseEntity<>(roomTypeService.save(managerId, roomTypeDto), HttpStatus.CREATED);
     }
 
-    @PostMapping
+    @PostMapping("/all")
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<List<RoomTypeDto>> addAllRoomTypes(@RequestHeader("Authorization") String authorization,
-                                                             @RequestParam List<RoomTypeDto> roomTypeDtos){
+                                                             @RequestBody List<RoomTypeDto> roomTypeDtos){
         Long managerId = securityAspect.getUserId(authorization);
         return new ResponseEntity<>(roomTypeService.saveAll(managerId, roomTypeDtos), HttpStatus.CREATED);
     }
@@ -41,7 +41,7 @@ public class RoomTypeController {
     @PutMapping
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<RoomTypeDto> updateRoomType(@RequestHeader("Authorization") String authorization,
-                                                      @RequestParam RoomTypeDto roomTypeDto){
+                                                      @RequestBody RoomTypeDto roomTypeDto){
         Long managerId = securityAspect.getUserId(authorization);
         return new ResponseEntity<>(roomTypeService.update(managerId, roomTypeDto), HttpStatus.CREATED);
     }
@@ -49,7 +49,7 @@ public class RoomTypeController {
     @DeleteMapping
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<RoomTypeDto> removeRoomType(@RequestHeader("Authorization") String authorization,
-                                                      @RequestParam Long id){
+                                                      @RequestBody Long id){
         return new ResponseEntity<>(roomTypeService.remove(id), HttpStatus.CREATED);
     }
 

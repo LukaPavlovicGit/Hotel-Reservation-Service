@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import java.awt.image.ImageProducer;
 import java.time.Period;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -76,6 +77,10 @@ public class ReservationService {
 
         sendEmail(reservation, "reservation_successful");
         return reservationDto;
+    }
+
+    public List getAllReservations(){
+        return reservationRepository.findAll().stream().map(mapper::reservationToDto).collect(Collectors.toList());
     }
 
     public ReservationDto removeReservation(Long reservationId, Long userId, String role){

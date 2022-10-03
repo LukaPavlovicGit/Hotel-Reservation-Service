@@ -27,7 +27,6 @@ public class HotelService {
         Optional<Hotel> hotelOptional = hotelRepository.findHotelByManagerId(hotelDto.getManagerId());
         if(hotelOptional.isPresent())
             throw new OperationNotAllowed("Manager with a ID: " + hotelDto.getManagerId() + " is already a manager!");
-        System.out.println("KL:ASDJKASKJDAKJLSDKJLALKJSDKLJ");
         hotelRepository.save(mapper.dtoToHotel(hotelDto));
         return hotelDto;
     }

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @RestController
@@ -36,6 +37,13 @@ public class ReservationController {
         Long clientId = securityAspect.getUserId(authorization);
         String clientEmail = securityAspect.getUserEmail(authorization);
         return new ResponseEntity<>(reservationService.save(new ReservationDto(roomId,clientId,clientEmail,startDate,endDate)), HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    @CheckSecurity(roles = {"ROLE_MANAGER"})
+    public ResponseEntity<List<ReservationDto>> getAllReservations(@RequestHeader("Authorization") String authorization){
+
+        return new ResponseEntity<>(reservationService.getAllReservations(), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
