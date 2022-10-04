@@ -3,16 +3,21 @@ package com.raf.example.HotelReservationService.dto;
 public class RoomDto {
     private Long hotelId;
     private Integer roomNumber;
-    private String type;
+    private String typeName;
     private Double pricePerDay;
 
     public RoomDto() {
     }
 
-    public RoomDto(Long hotelId, Integer roomNumber, String type, Double pricePerDay) {
+    public RoomDto(Integer roomNumber, String typeName) {
+        this.roomNumber = roomNumber;
+        this.typeName = typeName;
+    }
+
+    public RoomDto(Long hotelId, Integer roomNumber, String typeName, Double pricePerDay) {
         this.hotelId = hotelId;
         this.roomNumber = roomNumber;
-        this.type = type;
+        this.typeName = typeName;
         this.pricePerDay = pricePerDay;
     }
 
@@ -32,12 +37,12 @@ public class RoomDto {
         this.roomNumber = roomNumber;
     }
 
-    public String getType() {
-        return type;
+    public String getTypeName() {
+        return typeName;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public Double getPricePerDay() {

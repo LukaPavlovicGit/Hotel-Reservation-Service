@@ -27,10 +27,9 @@ public class RoomController {
     @PostMapping
     @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<RoomDto> addRoom(@RequestHeader("Authorization") String authorization,
-                                           @RequestParam(required = false, value = "roomType") String roomType,
-                                           @RequestParam(required = false, value = "roomNumber") Integer roomNumber){
+                                           @RequestBody RoomDto roomDto) {
         Long managerId = securityAspect.getUserId(authorization);
-        return new ResponseEntity<>(roomService.save(managerId, roomType, roomNumber), HttpStatus.CREATED);
+        return new ResponseEntity<>(roomService.save(managerId, roomDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping
@@ -42,7 +41,7 @@ public class RoomController {
     }
 
     @GetMapping
-    @CheckSecurity(roles = {"ROLE_CLIENT"})
+    @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER", "ROLE_ADMIN"})
     public List<RoomDto> getAvailableRooms(@RequestHeader("Authorization") String authorization,
                                            @RequestBody AvailableRoomsFilterDto availableRoomsFilterDto){
         return roomService.listAvailableRooms(availableRoomsFilterDto);

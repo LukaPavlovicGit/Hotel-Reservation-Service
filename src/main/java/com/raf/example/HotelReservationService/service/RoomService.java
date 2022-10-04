@@ -45,21 +45,21 @@ public class RoomService {
         this.mapper = mapper;
     }
 
-    public RoomDto save(Long managerId, String roomTypeName, Integer roomNumber){
-
+    public RoomDto save(Long managerId, RoomDto roomDto){
+        System.out.println("Room service : save");
         Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
         Long hotelId = hotel.getId();
-        RoomType roomType = roomTypeRepository.findByHotelIdAndTypeName(hotel.getId(),roomTypeName)
-                .orElseThrow(() -> new NotFoundException(String.format("Room type with a name %s not found.", roomTypeName)));
+        RoomType roomType = roomTypeRepository.findByHotelIdAndTypeName(hotel.getId(),roomDto.getTypeName())
+                .orElseThrow(() -> new NotFoundException(String.format("Room type with a name %s not found.", roomDto.getTypeName())));
 
-        Optional<Room> roomOptional = roomRepository.findByRoomNumber(roomNumber);
+        Optional<Room> roomOptional = roomRepository.findByRoomNumber(roomDto.getRoomNumber());
         if(roomOptional.isPresent())
-            throw new OperationNotAllowed(String.format("Room with a room number %s already exist. Choose different room number.", roomNumber));
+            throw new OperationNotAllowed(String.format("Room with a room number %s already exist. Choose different room number.", roomDto.getRoomNumber()));
 
-        Room room = new Room(hotelId, roomNumber, roomType);
+        Room room = new Room(hotelId, roomDto.getRoomNumber(), roomType);
         roomRepository.save(room);
         hotelService.incrementNumberOfRooms(hotelId);
-
+        System.out.println("Room service : save 2");
         return mapper.roomToDto(room);
     }
 

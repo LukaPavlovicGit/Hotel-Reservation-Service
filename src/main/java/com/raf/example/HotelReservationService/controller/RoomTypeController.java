@@ -1,6 +1,5 @@
 package com.raf.example.HotelReservationService.controller;
 
-import com.raf.example.HotelReservationService.dto.RoomDto;
 import com.raf.example.HotelReservationService.dto.RoomTypeDto;
 import com.raf.example.HotelReservationService.secutiry.CheckSecurity;
 import com.raf.example.HotelReservationService.secutiry.SecurityAspect;

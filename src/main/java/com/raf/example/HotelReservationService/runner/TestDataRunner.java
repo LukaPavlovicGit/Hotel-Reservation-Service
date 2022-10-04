@@ -32,6 +32,7 @@ public class TestDataRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        /*
         Hotel h1 = new Hotel("","hotel1","desc");
         Hotel h2 = new Hotel("","hotel2","desc");
         Hotel h3 = new Hotel("","hotel3","desc");
@@ -153,7 +154,7 @@ public class TestDataRunner implements CommandLineRunner {
         roomRepository.save(r4h4);
         roomRepository.save(r5h4);
         roomRepository.save(r6h4);
-
+    */
 
 
     }
