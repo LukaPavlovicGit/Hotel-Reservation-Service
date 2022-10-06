@@ -5,10 +5,13 @@ import com.raf.example.HotelReservationService.dto.ReservationDto;
 import com.raf.example.HotelReservationService.secutiry.CheckSecurity;
 import com.raf.example.HotelReservationService.secutiry.SecurityAspect;
 import com.raf.example.HotelReservationService.service.ReservationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,9 +44,9 @@ public class ReservationController {
 
     @GetMapping
     @CheckSecurity(roles = {"ROLE_MANAGER"})
-    public ResponseEntity<List<ReservationDto>> getAllReservations(@RequestHeader("Authorization") String authorization){
-
-        return new ResponseEntity<>(reservationService.getAllReservations(), HttpStatus.OK);
+    public ResponseEntity<Page<ReservationDto>> getAllReservations(@RequestHeader("Authorization") String authorization,
+                                                                   @ApiIgnore Pageable pageable){
+        return new ResponseEntity<>(reservationService.getAllReservations(pageable), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")

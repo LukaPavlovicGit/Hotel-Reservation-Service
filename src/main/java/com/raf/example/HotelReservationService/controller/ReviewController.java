@@ -6,9 +6,12 @@ import com.raf.example.HotelReservationService.secutiry.CheckSecurity;
 import com.raf.example.HotelReservationService.secutiry.SecurityAspect;
 import com.raf.example.HotelReservationService.service.ReviewService;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -38,10 +41,11 @@ public class ReviewController {
     @GetMapping("/all")
     @ApiOperation("list reviews")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER", "ROLE_CLIENT"})
-    public ResponseEntity<List<ReviewDto>> getAllReviews(@RequestHeader("authorization") String authorization,
+    public ResponseEntity<Page<ReviewDto>> getAllReviews(@RequestHeader("authorization") String authorization,
                                                          @RequestParam(required = false, value = "hotelName") String hotelName,
-                                                         @RequestParam(required = false, value = "city") String city){
-        return new ResponseEntity<>(reviewService.getReviews(hotelName,city), HttpStatus.OK);
+                                                         @RequestParam(required = false, value = "city") String city,
+                                                         @ApiIgnore Pageable pageable){
+        return new ResponseEntity<>(reviewService.getReviews(hotelName,city,pageable), HttpStatus.OK);
     }
 
     @DeleteMapping

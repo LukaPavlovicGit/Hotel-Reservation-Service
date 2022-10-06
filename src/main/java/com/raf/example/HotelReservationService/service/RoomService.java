@@ -13,6 +13,9 @@ import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.repository.RoomRepository;
 import com.raf.example.HotelReservationService.repository.RoomTypeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +75,7 @@ public class RoomService {
         return mapper.roomToDto(room);
     }
 
-    public List<RoomDto> listAvailableRooms(AvailableRoomsFilterDto availableRoomsFilterDto){
+    public Page<RoomDto> listAvailableRooms(AvailableRoomsFilterDto availableRoomsFilterDto, Pageable pageable){
         List<Room> rooms = roomRepository.findAll();
 
         if(rooms == null)
@@ -115,6 +118,6 @@ public class RoomService {
             roomsDto.add(mapper.roomToDto(room));
         }
 
-        return roomsDto;
+        return new PageImpl<>(roomsDto);
     }
 }

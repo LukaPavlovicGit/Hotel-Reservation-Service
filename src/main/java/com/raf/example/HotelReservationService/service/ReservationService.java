@@ -14,6 +14,8 @@ import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.repository.RoomRepository;
 import io.github.resilience4j.retry.Retry;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
@@ -79,8 +81,8 @@ public class ReservationService {
         return reservationDto;
     }
 
-    public List getAllReservations(){
-        return reservationRepository.findAll().stream().map(mapper::reservationToDto).collect(Collectors.toList());
+    public Page<ReservationDto> getAllReservations(Pageable pageable){
+        return reservationRepository.findAll(pageable).map(mapper::reservationToDto);
     }
 
     public ReservationDto removeReservation(Long reservationId, Long userId, String role){

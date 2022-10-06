@@ -11,6 +11,9 @@ import com.raf.example.HotelReservationService.mapper.Mapper;
 import com.raf.example.HotelReservationService.repository.HotelRepository;
 import com.raf.example.HotelReservationService.repository.ReservationRepository;
 import com.raf.example.HotelReservationService.repository.ReviewRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +50,7 @@ public class ReviewService {
         throw new NotFoundException(String.format("Reservation with ID %s not found.", reviewDto.getReservationId()));
     }
 
-    public List<ReviewDto> getReviews(String hotelName, String city){
+    public Page<ReviewDto> getReviews(String hotelName, String city, Pageable pageable){
 
         List<Review> reviews = reviewRepository.findAll();
         reviews = reviews.stream().filter(r -> {
@@ -64,7 +67,7 @@ public class ReviewService {
         for(Review r : reviews)
             ans.add(mapper.reviewToDto(r));
 
-        return (ans.isEmpty() ? null : ans);
+        return  ans.isEmpty() ? null : new PageImpl<ReviewDto>(ans);
     }
 
     public ReviewDto remove(Long reviewId, String userRole, Long clientId){
@@ -87,7 +90,7 @@ public class ReviewService {
         return reviewDto;
     }
 
-    public List<HotelDto> getTopRatedHotels() {
+    public Page<HotelDto> getTopRatedHotels(Pageable pageable) {
         List<HotelDto> topHotels = new ArrayList<>();
         HashMap<Hotel, Integer> cnt = new HashMap<>();
         HashMap<Hotel, Double> rating = new HashMap<>();
@@ -113,7 +116,7 @@ public class ReviewService {
         topHotels.sort(Comparator.comparingDouble(o -> (rating.get(o) / cnt.get(o))));
         Collections.reverse(topHotels);
 
-        return topHotels.subList(0, Math.min(3, topHotels.size()));
+        return new PageImpl<>(topHotels.subList(0, Math.min(3, topHotels.size())));
     }
 
 }
