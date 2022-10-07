@@ -1,5 +1,7 @@
 package com.raf.example.HotelReservationService.controller;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.raf.example.HotelReservationService.domain.Room;
 import com.raf.example.HotelReservationService.dto.AvailableRoomsFilterDto;
 import com.raf.example.HotelReservationService.dto.ReviewDto;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -47,9 +50,15 @@ public class RoomController {
     @GetMapping
     @CheckSecurity(roles = {"ROLE_CLIENT", "ROLE_MANAGER", "ROLE_ADMIN"})
     public ResponseEntity<Page<RoomDto>> getAvailableRooms(@RequestHeader("Authorization") String authorization,
-                                                           @RequestBody AvailableRoomsFilterDto availableRoomsFilterDto,
+                                                           @RequestParam(required = false, value = "hotelName") String hotelName,
+                                                           @RequestParam(required = false, value = "city") String city,
+                                                           @RequestParam(required = false, value = "startDate") String startDate,
+                                                           @RequestParam(required = false, value = "endDate") String endDate,
+                                                           @RequestParam(required = false, value = "sort") String sort,
                                                            @ApiIgnore Pageable pageable){
-        return new ResponseEntity<>(roomService.listAvailableRooms(availableRoomsFilterDto,pageable), HttpStatus.OK);
+
+        return new ResponseEntity<>(roomService.listAvailableRooms(
+                new AvailableRoomsFilterDto(hotelName,city,LocalDate.parse(startDate),LocalDate.parse(endDate),sort),pageable), HttpStatus.OK);
     }
 
 }

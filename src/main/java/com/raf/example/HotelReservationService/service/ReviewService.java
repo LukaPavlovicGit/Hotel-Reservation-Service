@@ -94,7 +94,6 @@ public class ReviewService {
         List<HotelDto> topHotels = new ArrayList<>();
         HashMap<Hotel, Integer> cnt = new HashMap<>();
         HashMap<Hotel, Double> rating = new HashMap<>();
-
         for (Review review: reviewRepository.findAll()) {
             Reservation reservation = reservationRepository.findById(review.getReservationId()).get();
             Hotel hotel = hotelRepository.findById(reservation.getHotelId()).get();
