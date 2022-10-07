@@ -22,6 +22,13 @@ public class Room {
         this.roomType = roomType;
     }
 
+    public Room(Long id, Long hotelId, Integer roomNumber, RoomType roomType) {
+        this.id = id;
+        this.hotelId = hotelId;
+        this.roomNumber = roomNumber;
+        this.roomType = roomType;
+    }
+
     public Room() {}
 
     public Long getId() {

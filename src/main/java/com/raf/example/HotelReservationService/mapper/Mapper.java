@@ -11,6 +11,9 @@ public class Mapper {
     public RoomDto roomToDto(Room room){
         return new RoomDto(room.getHotelId(), room.getRoomNumber(), room.getRoomType().getTypeName(), room.getRoomType().getPricePerDay());
     }
+    public Room dtoToRoom(RoomDto dto){
+        return new Room(dto.getId(), dto.getHotelId(), dto.getRoomNumber(), null);
+    }
     public Hotel dtoToHotel(HotelDto hotelDto){
         return new Hotel(hotelDto.getManagerId(), hotelDto.getCity(), hotelDto.getName(), hotelDto.getDescription());
     }

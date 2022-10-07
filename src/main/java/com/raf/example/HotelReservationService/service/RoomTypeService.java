@@ -41,7 +41,10 @@ public class RoomTypeService {
 
     public List<RoomTypeDto> saveAll(Long managerId, List<RoomTypeDto> roomTypesDto){
         Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
-
+        for(RoomTypeDto roomTypeDto : roomTypesDto) {
+            roomTypeDto.setHotelId(hotel.getId());
+            roomTypeRepository.save(mapper.dtoToRoomType(roomTypeDto));
+        }
         return roomTypesDto;
     }
 

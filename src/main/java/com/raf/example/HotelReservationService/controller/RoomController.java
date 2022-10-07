@@ -57,8 +57,16 @@ public class RoomController {
                                                            @RequestParam(required = false, value = "sort") String sort,
                                                            @ApiIgnore Pageable pageable){
 
-        return new ResponseEntity<>(roomService.listAvailableRooms(
-                new AvailableRoomsFilterDto(hotelName,city,LocalDate.parse(startDate),LocalDate.parse(endDate),sort),pageable), HttpStatus.OK);
+        return new ResponseEntity<>(roomService
+                .listAvailableRooms(new AvailableRoomsFilterDto(hotelName,city,LocalDate.parse(startDate),LocalDate.parse(endDate),sort),pageable), HttpStatus.OK);
+    }
+
+    @PutMapping
+    @CheckSecurity(roles = {"ROLE_MANAGER"})
+    public ResponseEntity<RoomDto> updateRoom(@RequestHeader("Authorization") String authorization,
+                                              @RequestBody RoomDto roomDto){
+        Long managerId = securityAspect.getUserId(authorization);
+        return new ResponseEntity<>(roomService.update(managerId, roomDto), HttpStatus.OK);
     }
 
 }

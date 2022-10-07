@@ -49,9 +49,10 @@ public class RoomService {
     }
 
     public RoomDto save(Long managerId, RoomDto roomDto){
-        System.out.println("Room service : save");
+
         Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
         Long hotelId = hotel.getId();
+
         RoomType roomType = roomTypeRepository.findByHotelIdAndTypeName(hotel.getId(),roomDto.getTypeName())
                 .orElseThrow(() -> new NotFoundException(String.format("Room type with a name %s not found.", roomDto.getTypeName())));
 
@@ -62,7 +63,7 @@ public class RoomService {
         Room room = new Room(hotelId, roomDto.getRoomNumber(), roomType);
         roomRepository.save(room);
         hotelService.incrementNumberOfRooms(hotelId);
-        System.out.println("Room service : save 2");
+
         return mapper.roomToDto(room);
     }
 
@@ -119,5 +120,17 @@ public class RoomService {
         }
 
         return new PageImpl<>(roomsDto);
+    }
+    public RoomDto update(Long managerId, RoomDto roomDto){
+        roomRepository.findById(roomDto.getId()).orElseThrow(() -> new NotFoundException("Room not found"));
+        Hotel hotel = hotelRepository.findHotelByManagerId(managerId).get();
+        RoomType roomType = roomTypeRepository.findByHotelIdAndTypeName(hotel.getId(),roomDto.getTypeName())
+                .orElseThrow(() -> new NotFoundException(String.format("Room type with a name %s not found.", roomDto.getTypeName())));
+
+        Room update = mapper.dtoToRoom(roomDto);
+        update.setRoomType(roomType);
+        roomRepository.save(update);
+
+        return roomDto;
     }
 }
