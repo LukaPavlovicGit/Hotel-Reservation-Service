@@ -37,6 +37,14 @@ public class Hotel {
         this.numberOfRooms = numberOfRooms;
     }
 
+    public Hotel(Long managerId, String city, String name, String description, Integer numberOfRooms) {
+        this.managerId = managerId;
+        this.city = city;
+        this.name = name;
+        this.description = description;
+        this.numberOfRooms = numberOfRooms;
+    }
+
     public Hotel(Long managerId, String city, String name, String description) {
         this.managerId = managerId;
         this.city = city;

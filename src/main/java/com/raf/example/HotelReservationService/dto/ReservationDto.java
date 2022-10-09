@@ -31,6 +31,12 @@ public class ReservationDto {
 
     }
 
+    public ReservationDto(Long roomId, LocalDate startDate, LocalDate endDate) {
+        this.roomId = roomId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
     public ReservationDto(Long roomId, Long clientId, String clientEmail, LocalDate startDate, LocalDate endDate) {
         this.roomId = roomId;
         this.clientId = clientId;

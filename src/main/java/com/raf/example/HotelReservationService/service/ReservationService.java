@@ -62,7 +62,7 @@ public class ReservationService {
         }
         Room room = roomRepository.findById(reservationDto.getRoomId()).get();
         //get discount from user service
-        ResponseEntity<DiscountDto> discountDtoResponseEntity =  Retry.decorateSupplier(userServiceRetry, () -> userServiceRestTemplate.exchange("/user/" +
+        ResponseEntity<DiscountDto> discountDtoResponseEntity =  Retry.decorateSupplier(userServiceRetry, () -> userServiceRestTemplate.exchange("/users/" +
                 reservationDto.getClientId() + "/discount", HttpMethod.GET, null, DiscountDto.class)).get();
 
         Double totalPrice = room.getRoomType().getPricePerDay() *
@@ -74,7 +74,7 @@ public class ReservationService {
         Reservation reservation = mapper.dtoToReservation(reservationDto);
         reservationRepository.save(reservation);
 
-        userServiceRestTemplate.exchange("http://localhost:8080/api/users/incrementReservation/"+reservationDto.getClientId(),
+        userServiceRestTemplate.exchange("/users/incrementReservation/"+reservationDto.getClientId(),
                 HttpMethod.POST, null, ResponseEntity.class);
 
         sendEmail(reservation, "reservation_successful");
@@ -96,7 +96,7 @@ public class ReservationService {
                     throw new OperationNotAllowed(String.format("Client not allowed to delete reservation with id %s.", reservationId));
             }
             reservationRepository.deleteById(reservation.getId());
-            userServiceRestTemplate.exchange("http://localhost:8080/api/users/decrementReservation/"+reservation.getUserId(),
+            userServiceRestTemplate.exchange("/users/decrementReservation/"+reservation.getUserId(),
                     HttpMethod.POST, null, ResponseEntity.class);
 
             sendEmail(reservation, "reservation_cancellation");
@@ -108,7 +108,7 @@ public class ReservationService {
     public void sendEmail(Reservation reservation, String emailType) {
         Hotel hotel = hotelRepository.findById(reservation.getHotelId())
                 .orElseThrow(() -> new NotFoundException(String.format("Hotel with id %s not found.", reservation.getHotelId())));
-        ResponseEntity<UserDto> userDto = userServiceRestTemplate.exchange("http://localhost:8080/api/users/get/" +
+        ResponseEntity<UserDto> userDto = userServiceRestTemplate.exchange("/users/" +
                 reservation.getUserId(), HttpMethod.GET, null, UserDto.class);
 
         MessageDto messageDto = new MessageDto(userDto.getBody().getFirstName(), userDto.getBody().getLastName(), userDto.getBody().getEmail(), hotel.getName());

@@ -111,7 +111,7 @@ public class RoomService {
             if(availableRoomsFilterDto.getSort().equalsIgnoreCase("ASC"))
                 Collections.sort(rooms, (o1, o2) -> Double.compare(o1.getRoomType().getPricePerDay(),o2.getRoomType().getPricePerDay()));
             else if(availableRoomsFilterDto.getSort().equalsIgnoreCase("DESC"))
-                Collections.sort(rooms, (o1, o2) -> Double.compare(o2.getRoomType().getPricePerDay(),o1.getRoomType().getPricePerDay()));
+                Collections.sort(rooms, (o2, o1) -> Double.compare(o2.getRoomType().getPricePerDay(),o1.getRoomType().getPricePerDay()));
         }
 
         List<RoomDto> roomsDto = new ArrayList<>();

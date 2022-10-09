@@ -32,10 +32,66 @@ public class TestDataRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        /*
-        Hotel h1 = new Hotel("","hotel1","desc");
-        Hotel h2 = new Hotel("","hotel2","desc");
-        Hotel h3 = new Hotel("","hotel3","desc");
+        // HOTEL 1:
+            //hotel
+            Hotel h1 = new Hotel(4L,"Cacak","Hotel Morava","Best of best!",6);
+            hotelRepository.save(h1);
+            //room types
+            RoomType rt1h1 = new RoomType("A", 20.0, h1.getId());
+            RoomType rt2h1 = new RoomType("B", 30.0, h1.getId());
+            RoomType rt3h1 = new RoomType("C", 60.0, h1.getId());
+            roomTypeRepository.save(rt1h1);
+            roomTypeRepository.save(rt2h1);
+            roomTypeRepository.save(rt3h1);
+            // rooms
+            Room r1h1 = new Room(h1.getId(), 1, rt1h1);
+            Room r2h1 = new Room(h1.getId(), 2, rt1h1);
+            Room r3h1 = new Room(h1.getId(), 3, rt2h1);
+            Room r4h1 = new Room(h1.getId(), 4, rt2h1);
+            Room r5h1 = new Room(h1.getId(), 5, rt3h1);
+            Room r6h1 = new Room(h1.getId(), 6, rt3h1);
+            roomRepository.save(r1h1);
+            roomRepository.save(r2h1);
+            roomRepository.save(r3h1);
+            roomRepository.save(r4h1);
+            roomRepository.save(r5h1);
+            roomRepository.save(r6h1);
+
+        // HOTEL 2:
+            // hotel
+            Hotel h2 = new Hotel(5l,"Beograd","Hajat","Hotel od 5 zvezdica!",6);
+            hotelRepository.save(h2);
+            // room types
+            RoomType rt1h2 = new RoomType("A", 13.0, h2.getId());
+            RoomType rt2h2 = new RoomType("B", 20.0, h2.getId());
+            RoomType rt3h2 = new RoomType("C", 30.0, h2.getId());
+            roomTypeRepository.save(rt1h2);
+            roomTypeRepository.save(rt2h2);
+            roomTypeRepository.save(rt3h2);
+            // rooms
+            Room r1h2 = new Room(h2.getId(), 1, rt1h2);
+            Room r2h2 = new Room(h2.getId(), 2, rt1h2);
+            Room r3h2 = new Room(h2.getId(), 3, rt2h2);
+            Room r4h2 = new Room(h2.getId(), 4, rt2h2);
+            Room r5h2 = new Room(h2.getId(), 5, rt3h2);
+            Room r6h2 = new Room(h2.getId(), 6, rt3h2);
+            roomRepository.save(r1h2);
+            roomRepository.save(r2h2);
+            roomRepository.save(r3h2);
+            roomRepository.save(r4h2);
+            roomRepository.save(r5h2);
+            roomRepository.save(r6h2);
+
+
+
+
+
+
+
+
+
+
+       /* Hotel h3 = new Hotel("","hotel3","desc");
         Hotel h4 = new Hotel("","hotel4","desc");
         Hotel h5 = new Hotel("","hotel5","desc");
         Hotel h6 = new Hotel("","hotel6","desc");
@@ -155,7 +211,5 @@ public class TestDataRunner implements CommandLineRunner {
         roomRepository.save(r5h4);
         roomRepository.save(r6h4);
     */
-
-
     }
 }
