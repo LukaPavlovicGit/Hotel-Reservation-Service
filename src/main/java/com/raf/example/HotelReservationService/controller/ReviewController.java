@@ -1,6 +1,5 @@
 package com.raf.example.HotelReservationService.controller;
 
-import com.raf.example.HotelReservationService.domain.Review;
 import com.raf.example.HotelReservationService.dto.ReviewDto;
 import com.raf.example.HotelReservationService.secutiry.CheckSecurity;
 import com.raf.example.HotelReservationService.secutiry.SecurityAspect;
@@ -14,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @RestController
 @RequestMapping("/reviews")
@@ -28,7 +25,7 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @PostMapping("/comment")
+    @PostMapping()
     @ApiOperation(value = "make a comment")
     @CheckSecurity(roles = {"ROLE_CLIENT"})
     public ResponseEntity<ReviewDto> addReview(@RequestHeader("authorization") String authorization,
@@ -38,13 +35,13 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.save(reviewDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/all")
+    @GetMapping()
     @ApiOperation("list reviews")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER", "ROLE_CLIENT"})
-    public ResponseEntity<Page<ReviewDto>> getAllReviews(@RequestHeader("authorization") String authorization,
-                                                         @RequestParam(required = false, value = "hotelName") String hotelName,
-                                                         @RequestParam(required = false, value = "city") String city,
-                                                         @ApiIgnore Pageable pageable){
+    public ResponseEntity<Page<ReviewDto>> getReviews(@RequestHeader("authorization") String authorization,
+                                                      @RequestParam(required = false, value = "hotelName") String hotelName,
+                                                      @RequestParam(required = false, value = "city") String city,
+                                                      @ApiIgnore Pageable pageable){
         return new ResponseEntity<>(reviewService.getReviews(hotelName,city,pageable), HttpStatus.OK);
     }
 
