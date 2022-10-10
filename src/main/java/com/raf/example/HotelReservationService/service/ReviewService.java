@@ -66,8 +66,8 @@ public class ReviewService {
         List<ReviewDto> ans = new ArrayList<>();
         for(Review r : reviews)
             ans.add(mapper.reviewToDto(r));
-        System.out.println("GET REVIEWS");
-        return  ans.isEmpty() ? null : new PageImpl<ReviewDto>(ans);
+
+        return new PageImpl<ReviewDto>(ans);
     }
 
     public ReviewDto remove(Long reviewId, String userRole, Long clientId){

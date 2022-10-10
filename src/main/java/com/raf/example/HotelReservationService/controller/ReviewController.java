@@ -59,7 +59,7 @@ public class ReviewController {
     @ApiOperation(value = "update comment")
     @CheckSecurity(roles = {"ROLE_CLIENT"})
     public ResponseEntity<ReviewDto> updateReview(@RequestHeader("authorization") String authorization,
-                                                  @PathVariable Long id,
+                                                  @PathVariable("id") Long id,
                                                   @RequestBody @Valid ReviewDto reviewDto) {
         Long clientId = securityAspect.getUserId(authorization);
         reviewDto.setClientId(clientId);
