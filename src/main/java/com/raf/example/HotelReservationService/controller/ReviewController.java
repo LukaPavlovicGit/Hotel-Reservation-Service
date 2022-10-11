@@ -63,6 +63,7 @@ public class ReviewController {
                                                   @RequestBody @Valid ReviewDto reviewDto) {
         Long clientId = securityAspect.getUserId(authorization);
         reviewDto.setClientId(clientId);
-        return new ResponseEntity<>(reviewService.update(id, reviewDto), HttpStatus.OK);
+        reviewDto.setReviewId(id);
+        return new ResponseEntity<>(reviewService.update(reviewDto), HttpStatus.OK);
     }
 }

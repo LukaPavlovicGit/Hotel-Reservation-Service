@@ -38,6 +38,10 @@ public class ReviewService {
 
     public ReviewDto save(ReviewDto reviewDto){
 
+        Optional<Review> optionalReview = reviewRepository.findByReservationIdAndUserId(reviewDto.getReservationId(), reviewDto.getClientId());
+        if(optionalReview.isPresent())
+            throw new OperationNotAllowed("Can't make multiple reviews on a one single reservation!");
+
         Optional<Reservation> reservationOptional = reservationRepository.findById(reviewDto.getReservationId());
         if(reservationOptional.isPresent()){
             Reservation reservation = reservationOptional.get();
@@ -56,7 +60,7 @@ public class ReviewService {
         reviews = reviews.stream().filter(r -> {
             Reservation reservation = reservationRepository.findById(r.getReservationId()).orElseThrow(() -> new NotFoundException("exception occurred in ReviewService class : reservation not found"));
             Hotel hotel = hotelRepository.findById(reservation.getHotelId()).orElseThrow(() -> new NotFoundException("exception occurred in ReviewService class : hotel not found"));
-            if ((hotelName == null || hotelName.equals(hotel.getName())) && (city == null || city.equals(hotel.getCity())))
+            if ((hotelName == null || hotelName.equalsIgnoreCase(hotel.getName())) && (city == null || city.equalsIgnoreCase(hotel.getCity())))
                 return true;
 
             return false;
@@ -67,7 +71,7 @@ public class ReviewService {
         for(Review r : reviews)
             ans.add(mapper.reviewToDto(r));
 
-        return new PageImpl<ReviewDto>(ans);
+        return new PageImpl<>(ans);
     }
 
     public ReviewDto remove(Long reviewId, String userRole, Long clientId){
@@ -82,10 +86,10 @@ public class ReviewService {
         return mapper.reviewToDto(review);
     }
 
-    public ReviewDto update(Long id, ReviewDto reviewDto){
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("Review with id %s not found.", id)));
+    public ReviewDto update(ReviewDto reviewDto){
+        Review review = reviewRepository.findById(reviewDto.getReviewId()).orElseThrow(() -> new NotFoundException("Review not found."));
         if(review.getUserId() != reviewDto.getClientId())
-            throw new OperationNotAllowed(String.format("Client not allowed to delete review with id %s.", reviewDto.getClientId()));
+            throw new OperationNotAllowed(String.format("Client not allowed to delete review with reviewId %s.", reviewDto.getClientId()));
         reviewRepository.save(mapper.updateReview(review, reviewDto));
         return reviewDto;
     }

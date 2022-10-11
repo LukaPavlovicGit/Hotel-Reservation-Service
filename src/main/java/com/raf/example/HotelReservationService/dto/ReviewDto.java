@@ -5,6 +5,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class ReviewDto {
+    private Long reviewId;
     private Long reservationId;
     private Long clientId;
     @Min(1)
@@ -21,6 +22,14 @@ public class ReviewDto {
         this.clientId = clientId;
         this.rating = rate;
         this.comment = comment;
+    }
+
+    public Long getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(Long reviewId) {
+        this.reviewId = reviewId;
     }
 
     public Long getReservationId() {

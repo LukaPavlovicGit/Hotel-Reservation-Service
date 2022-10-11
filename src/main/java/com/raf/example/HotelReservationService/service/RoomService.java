@@ -84,22 +84,22 @@ public class RoomService {
 
         rooms = rooms.stream()
                 .filter(r -> {
-                    Optional<Reservation> reservationOptional = reservationRepository.findByRoomId(r.getId());
-                    if(reservationOptional.isPresent()) {
-                        Reservation reservation = reservationOptional.get();
-                        Hotel hotel = hotelRepository.findById(reservation.getHotelId()).get();
-                        if(availableRoomsFilterDto.getCity() != null && !availableRoomsFilterDto.getCity().equalsIgnoreCase(hotel.getCity()))
-                            return false;
-                        if(availableRoomsFilterDto.getHotelName() != null && availableRoomsFilterDto.getHotelName().equalsIgnoreCase(hotel.getName()))
-                            return false;
-                        if(availableRoomsFilterDto.getStartDate() != null && availableRoomsFilterDto.getEndDate() != null &&
-                                availableRoomsFilterDto.getStartDate().isBefore(availableRoomsFilterDto.getEndDate())) {
-                            if(!availableRoomsFilterDto.getEndDate().isBefore(reservation.getStartDate()) || !availableRoomsFilterDto.getStartDate().isAfter(reservation.getEndDate()))
-                                return false;
-                        }
-                        else {
-                            LocalDate now = LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                            if(now.isAfter(reservation.getStartDate()) && now.isBefore(reservation.getEndDate()))
+                    Hotel hotel = hotelRepository.findById(r.getHotelId()).get();
+                    if(availableRoomsFilterDto.getHotelName() != null && !availableRoomsFilterDto.getHotelName().equalsIgnoreCase(hotel.getName()) ||
+                            availableRoomsFilterDto.getCity() != null && !availableRoomsFilterDto.getCity().equalsIgnoreCase(hotel.getCity()))
+                        return false;
+
+                    LocalDate start = availableRoomsFilterDto.getStartDate();
+                    LocalDate end = availableRoomsFilterDto.getEndDate();
+
+                    if(start != null && end != null && start.isBefore(end)) {
+                        List<Reservation> reservationList = reservationRepository.findAllByRoomId(r.getId());
+
+                        for (Reservation reservation : reservationList) {
+                            LocalDate reservationStart = reservation.getStartDate();
+                            LocalDate reservationEnd = reservation.getEndDate();
+                            if ( (start.equals(reservationStart) || start.isAfter(reservationStart)) && (start.equals(reservationEnd) || start.isBefore(reservationEnd)) ||
+                                    (end.isEqual(reservationEnd) || end.isBefore(reservationEnd)) && (end.isEqual(reservationStart) || end.isAfter(reservationStart)))
                                 return false;
                         }
                     }
